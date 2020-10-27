@@ -1,0 +1,15 @@
+*.class
+bin/
+*.out
+*.log
+*.bak
+*.swp
+core
+classes/
+
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build/
