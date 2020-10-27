@@ -4,4 +4,5 @@
 
 plugins {
     id 'vchat.scala-library-conventions'
+    id 'scala'
 }

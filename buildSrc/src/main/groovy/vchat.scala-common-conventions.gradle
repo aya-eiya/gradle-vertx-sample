@@ -7,6 +7,9 @@ plugins {
     id 'scala'
 }
 
+def scalaVersion = '2.12'
+def scalaVersionFull = "${scalaVersion}.12"
+
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
@@ -14,7 +17,9 @@ repositories {
 
 dependencies {
     // Use Scala 2.13 in our library project
-    implementation 'org.scala-lang:scala-library:2.13.3'
+    implementation 'org.scala-lang:scala-library:2.12.12'
+    scalaCompilerPlugins "org.typelevel:kind-projector_${scalaVersionFull}:0.11.0"
+    compile "org.typelevel:cats-core_${scalaVersion}:2.2.0"
 
     // Use JUnit Jupiter API for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'

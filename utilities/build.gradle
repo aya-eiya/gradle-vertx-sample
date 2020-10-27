@@ -4,6 +4,7 @@
 
 plugins {
     id 'vchat.scala-library-conventions'
+    id 'scala'
 }
 
 dependencies {

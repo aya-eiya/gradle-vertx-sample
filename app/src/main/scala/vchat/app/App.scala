@@ -3,11 +3,20 @@
  */
 package vchat.app
 
-import vchat.utilities.StringUtils
+import io.vertx.scala.core.Vertx
+import io.vertx.scala.ext.web.Router
 
 object App {
    def main(args: Array[String]): Unit = {
-        val tokens = StringUtils.split(MessageUtils.getMessage())
-        println(StringUtils.join(tokens))
+     val vertx = Vertx.vertx()
+     val router = Router.router(vertx)
+     router.route().handler(context=>{
+       val res = context.response()
+       res.putHeader("content-type","text/plane")
+       res.end("Hello world.")
+     })
+
+     val srv = vertx.createHttpServer()
+     srv.requestHandler(router.accept _).listen(8080)
     }
 }
