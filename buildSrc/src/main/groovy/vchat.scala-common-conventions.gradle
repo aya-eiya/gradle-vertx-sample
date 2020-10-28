@@ -7,8 +7,10 @@ plugins {
     id 'scala'
 }
 
-def scalaVersion = '2.12'
-def scalaVersionFull = "${scalaVersion}.12"
+ext {
+    scalaVersion = '2.12'
+    scalaVersionFull = "${scalaVersion}.12"
+}
 
 repositories {
     // Use JCenter for resolving dependencies.

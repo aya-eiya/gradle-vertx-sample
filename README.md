@@ -52,10 +52,31 @@ Enter selection (default: Groovy) [1..2] 1
 
 だった。
 
-`dependencies > implementation`を
+`dependencies.implementation`を
 
 ```gradle
   implementation 'org.scala-lang:scala-library:2.12.12'
 ```
 
 あたりに書き換える。
+
+## compiler pluginを使用する
+
+Scalaではコンパイラープラグインを使用して、Syntaxを追加したり文法解釈を変更したりできる。
+
+今回は、[typelevel/kind-projector](https://github.com/typelevel/kind-projector) を使用して、GradleでCompilerPluginが使用できるかどうか検証してみる。
+
+このプラグインは、いくつかのSyntaxを追加する。
+
+設定方法は、ScalaのVersion設定と同様に、
+
+`buildSrc/src/main/groovy/${projectName}.scala-common-conventions.gradle`
+
+`dependencies.implementation`に、
+
+```gradle
+    scalaCompilerPlugins "org.typelevel:kind-projector_${scalaVersionFull}:0.11.0"
+    compile "org.typelevel:cats-core_${scalaVersion}:2.2.0"
+```
+
+と記述する。

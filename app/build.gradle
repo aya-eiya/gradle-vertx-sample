@@ -8,9 +8,8 @@ plugins {
 }
 
 def vertxVersion = '3.+'
-
-def scalaVersion = '2.12'
-def scalaVersionFull = "${scalaVersion}.12"
+def scalaVersion = project.ext['scalaVersion']
+def scalaVersionFull = project.ext['scalaVersionFull']
 
 dependencies {
     implementation project(':utilities')
