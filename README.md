@@ -80,3 +80,28 @@ Scalaではコンパイラープラグインを使用して、Syntaxを追加し
 ```
 
 と記述する。
+
+## テストエンジンにScalaTestを使う
+
+上記ファイルに、
+```
+
+    // Use JUnit Jupiter API & ScalaTest for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.+',
+                       "org.scalatest:scalatest_${scalaVersion}:3.2.+"
+
+    // Use JUnit Jupiter Engine for testing.
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntime 'co.helmethair:scalatest-junit-runner:0.1.6'
+```
+
+を追加する。
+
+
+TODO:
+
+```
+./gradlew test
+```
+
+はうまく動いてくれるが、IntelliJでは動かない。
