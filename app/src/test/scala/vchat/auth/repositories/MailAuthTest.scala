@@ -3,9 +3,11 @@ package vchat.auth.repositories
 import org.scalatest.funspec.AnyFunSpec
 
 class MailAuthTest extends AnyFunSpec {
+  def empty = Set.empty
   describe("scala test check") {
-    describe("assertion check") {
-      assert("0" == "0","fail check")
+    it("assertion check") {
+      info(this.getClass.getName)
+      assert(empty.isEmpty,"fail check")
     }
   }
 }

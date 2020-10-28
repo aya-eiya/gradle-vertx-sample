@@ -4,18 +4,16 @@
 
 plugins {
     id 'vchat.scala-application-conventions'
-    id 'scala'
 }
 
 def vertxVersion = '3.+'
 def scalaVersion = project.ext['scalaVersion']
-def scalaVersionFull = project.ext['scalaVersionFull']
 
 dependencies {
-    implementation project(':utilities')
-    compile "io.vertx:vertx-core:${vertxVersion}"
-    compile "io.vertx:vertx-lang-scala_${scalaVersion}:${vertxVersion}"
-    compile "io.vertx:vertx-web-scala_${scalaVersion}:${vertxVersion}"
+    implementation project(':utilities'),
+            "io.vertx:vertx-core:${vertxVersion}",
+            "io.vertx:vertx-lang-scala_${scalaVersion}:${vertxVersion}",
+            "io.vertx:vertx-web-scala_${scalaVersion}:${vertxVersion}"
 }
 
 application {

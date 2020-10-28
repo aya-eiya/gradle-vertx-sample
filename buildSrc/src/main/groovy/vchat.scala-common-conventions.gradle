@@ -8,8 +8,19 @@ plugins {
 }
 
 ext {
+    // Build
     scalaVersion = '2.12'
     scalaVersionFull = "${scalaVersion}.12"
+    kindProjectorVersion = '0.11.0'
+
+    // TestFW
+    junitApiVersion = '5.7.0'
+    scalaTestVersion = '3.2.2'
+    junitRunnerVersion = '0.1.8'
+
+    // Type libs
+    catsVersion = '2.2.0'
+    fs2Version = '2.4.4'
 }
 
 repositories {
@@ -19,26 +30,30 @@ repositories {
 
 dependencies {
     // Use Scala 2.12 in our library project
-    implementation 'org.scala-lang:scala-library:2.12.12'
-    scalaCompilerPlugins "org.typelevel:kind-projector_${scalaVersionFull}:0.11.0"
-    compile "org.typelevel:cats-core_${scalaVersion}:2.2.0",
-            "co.fs2:fs2-core_${scalaVersion}:2.4.4",
-            "co.fs2:fs2-io_${scalaVersion}:2.4.4",
-            "co.fs2:fs2-reactive-streams_${scalaVersion}:2.4.4"
+    implementation "org.scala-lang:scala-library:${scalaVersionFull}"
+    scalaCompilerPlugins "org.typelevel:kind-projector_${scalaVersionFull}:${kindProjectorVersion}"
 
     // Use JUnit Jupiter API & ScalaTest for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.+',
-                       "org.scalatest:scalatest_${scalaVersion}:3.2.+"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitApiVersion}",
+                       "org.scalatest:scalatest_${scalaVersion}:${scalaTestVersion}"
 
     // Use JUnit Jupiter Engine for testing.
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testRuntime 'co.helmethair:scalatest-junit-runner:0.1.6'
-}
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitApiVersion}",
+                    "co.helmethair:scalatest-junit-runner:${junitRunnerVersion}"
 
+    // Common Type Utilities
+    implementation "org.typelevel:cats-core_${scalaVersion}:${catsVersion}",
+                   "co.fs2:fs2-core_${scalaVersion}:${fs2Version}",
+                   "co.fs2:fs2-io_${scalaVersion}:${fs2Version}",
+                   "co.fs2:fs2-reactive-streams_${scalaVersion}:${fs2Version}"
+}
 
 tasks.named('test') {
     // Use junit platform for unit tests.
     useJUnitPlatform {
-        includeEngines 'scalatest'
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
     }
+
 }

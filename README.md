@@ -91,17 +91,8 @@ Scalaではコンパイラープラグインを使用して、Syntaxを追加し
                        "org.scalatest:scalatest_${scalaVersion}:3.2.+"
 
     // Use JUnit Jupiter Engine for testing.
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testRuntime 'co.helmethair:scalatest-junit-runner:0.1.6'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine',
+                    'co.helmethair:scalatest-junit-runner:0.1.8'
 ```
 
 を追加する。
-
-
-TODO:
-
-```
-./gradlew test
-```
-
-はうまく動いてくれるが、IntelliJでは動かない。
