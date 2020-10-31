@@ -1,4 +1,4 @@
-package vchat.auth.repositories
+package vchat.auth.infra
 
 import vchat.auth._
 import vchat.utilities.email.EmailAddress

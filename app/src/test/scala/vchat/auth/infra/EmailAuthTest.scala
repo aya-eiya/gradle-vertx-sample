@@ -1,8 +1,7 @@
-package vchat.auth.repositories
+package vchat.auth.infra
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import vchat.auth._
 
 class EmailAuthTest extends AnyFunSpec with Matchers {
   describe("メールアドレスによる認証ができる") {
