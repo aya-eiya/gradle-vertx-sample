@@ -1,0 +1,9 @@
+{
+  "name": "vchat-web",
+  "version": "0.0.1",
+  "description": "Web front-end for vchat",
+  "main": "index.js",
+  "author": "aya-eiya",
+  "license": "MIT",
+  "private": true
+}

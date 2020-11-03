@@ -1,6 +1,10 @@
 package vchat.auth.repositories
 
-case class AuthEmailAddress(emailAddress: String);
-case class EncryptedPassword(password: String)
+case class AuthEmailAddress(value: String)
+case class EncryptedPassword(value: String, encryptor: String => String) {
+  def check(password: String): Boolean = encryptor(password) == value
+}
 
-trait MemberEmailRepository {}
+trait MemberEmailRepository {
+  def exists(emailAddress: AuthEmailAddress, rawPassword: String): Boolean
+}

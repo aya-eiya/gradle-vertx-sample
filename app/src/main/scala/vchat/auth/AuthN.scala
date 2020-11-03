@@ -1,6 +1,8 @@
 package vchat.auth
 
-case class AuthToken(token: String)
+import vchat.state.AccessToken
+
+case class AuthToken(token: AccessToken)
 case class AuthNErrorCode(code: Int, message: String) {
   def describe: String = s"[AuthNError:$code]$message"
 }
@@ -17,6 +19,10 @@ trait AuthNStatus {
 
 trait AuthNError {
   val code: AuthNErrorCode
+}
+
+trait Authorizer {
+  val AuthorizerId: String
 }
 
 trait AuthN {

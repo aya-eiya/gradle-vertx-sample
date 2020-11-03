@@ -2,17 +2,36 @@ package vchat.auth.infra
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import vchat.auth.infra.memory.InMemoryApplicationStateRepository
+import vchat.auth.repositories.{ApplicationStateRepository, AuthEmailAddress}
 
 class EmailAuthTest extends AnyFunSpec with Matchers {
+  val appContext: ApplicationStateRepository =
+    InMemoryApplicationStateRepository
+
   describe("メールアドレスによる認証ができる") {
     describe("メールアドレスが形式として正しい場合") {
       describe("パスワードが正しい場合") {
-        val result = new MailAuth("test@test.jp", "rightPassword").tryAuth()
+        val result =
+          new EmailAuth(AuthEmailAddress("test@test.jp"), "rightPassword")
+            .tryAuth()
         it("AuthNが認証済みになる") {
           assert(result.isRight)
           assert(result.exists(_.isAuthed))
         }
-        it("認証済みのAuthNがログインコンテキストから取得できる") {}
+        it("認証済みのAuthNがログインコンテキストから取得できる") {
+          val hasLoginState = result.right
+            .map(
+              _.token.token
+            )
+            .flatMap(
+              appContext.contextOf(_).toRight(fail("context not found"))
+            )
+            .exists(
+              _.loginContext.authNStatus.isAuthed
+            )
+          assert(hasLoginState)
+        }
       }
       describe("パスワードが正しくない場合") {
         it("AuthNから認証に失敗したメッセージが取得できる") {}
@@ -24,9 +43,11 @@ class EmailAuthTest extends AnyFunSpec with Matchers {
       }
     }
     describe("メールアドレスが形式として間違っている場合") {
-      val result = new MailAuth("test_test.jp", "rightPassword").tryAuth()
+      val result =
+        new EmailAuth(AuthEmailAddress("test_test.jp"), "rightPassword")
+          .tryAuth()
       it("MailAuthからメールアドレス形式違反メッセージを取得できる") {
-        val code = 100001
+        val code = 100002
         val message = "Wrong email address"
         assert(result.isLeft)
         result.fold(

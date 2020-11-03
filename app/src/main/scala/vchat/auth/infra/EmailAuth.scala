@@ -1,31 +1,28 @@
 package vchat.auth.infra
 
 import vchat.auth._
-import vchat.utilities.email.EmailAddress
+import vchat.auth.repositories.AuthEmailAddress
+import vchat.auth.infra.memory.StaticEmailAuthorizer
 
 case class EmailAuthNStatus(
     override val token: AuthToken,
-    override val isAuthed: Boolean,
-    override val retryTimes: Int
+    override val isAuthed: Boolean = false,
+    override val retryTimes: Int = 0
 ) extends AuthNStatus {
   override val maxRetryTime = 3
 }
-object EmailAuthNError {
-  val wrongEmailAddressErrorCode = AuthNErrorCode(100001, "Wrong email address")
-}
 case class EmailAuthNError(override val code: AuthNErrorCode) extends AuthNError
 
-class MailAuth(val emailAddress: String, val encryptedPassword: String)
+object EmailAuthNError {
+  val wrongEmailAddressErrorCode: AuthNErrorCode =
+    AuthNErrorCode(code = 100001, message = "Wrong email address")
+  val memberNotFound: AuthNErrorCode =
+    AuthNErrorCode(code = 100002, message = "Wrong email address")
+}
+
+class EmailAuth(val emailAddress: AuthEmailAddress, val rawPassword: String)
     extends AuthN {
-  override def tryAuth(): Either[EmailAuthNError, EmailAuthNStatus] = {
-    Either.cond(
-      EmailAddress.isValid(emailAddress),
-      EmailAuthNStatus(
-        AuthToken("hoge"),
-        true,
-        0
-      ),
-      EmailAuthNError(EmailAuthNError.wrongEmailAddressErrorCode)
-    )
-  }
+  private val authorizer = StaticEmailAuthorizer
+  override def tryAuth(): Either[EmailAuthNError, EmailAuthNStatus] =
+    authorizer.verifyPassword(emailAddress, rawPassword)
 }
