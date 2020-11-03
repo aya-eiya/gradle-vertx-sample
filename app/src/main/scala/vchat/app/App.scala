@@ -7,16 +7,19 @@ import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.Router
 
 object App {
-   def main(args: Array[String]): Unit = {
-     val vertx = Vertx.vertx()
-     val router = Router.router(vertx)
-     router.route().handler(context=>{
-       val res = context.response()
-       res.putHeader("content-type","text/plane")
-       res.end("Hello world.")
-     })
+  def main(args: Array[String]): Unit = {
+    val vertx = Vertx.vertx()
+    val router = Router.router(vertx)
+    router
+      .route()
+      .handler(context => {
+        val res = context.response()
+        res.putHeader("content-type", "text/plane")
+        res.end("Hello world.")
+      })
 
-     val srv = vertx.createHttpServer()
-     srv.requestHandler(router.accept _).listen(8080)
-    }
+    val srv = vertx.createHttpServer()
+    srv.requestHandler(router.accept _).listen(8080)
+    srv.close()
+  }
 }

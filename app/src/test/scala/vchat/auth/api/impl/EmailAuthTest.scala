@@ -1,9 +1,10 @@
-package vchat.auth.infra
+package vchat.auth.api.impl
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import vchat.auth.domain.models.values.email.AuthEmailAddress
+import vchat.auth.domain.repositories.ApplicationStateRepository
 import vchat.auth.infra.memory.InMemoryApplicationStateRepository
-import vchat.auth.repositories.{ApplicationStateRepository, AuthEmailAddress}
 
 class EmailAuthTest extends AnyFunSpec with Matchers {
   val appContext: ApplicationStateRepository =

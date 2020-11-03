@@ -1,6 +1,6 @@
 package vchat.state.repositories
 
-import vchat.state.{AccessToken, AccessTokenStatus}
+import vchat.state.models.values.{AccessToken, AccessTokenStatus}
 
 trait AccessTokenRepository {
   def create(): AccessToken

@@ -1,6 +1,6 @@
 package vchat.state.infra.memory
 
-import vchat.state._
+import vchat.state.models.values.{AccessToken, AccessTokenStatus}
 import vchat.state.repositories.AccessTokenRepository
 
 import scala.collection.mutable.{Map => MutMap}

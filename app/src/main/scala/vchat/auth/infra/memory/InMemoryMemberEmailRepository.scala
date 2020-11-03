@@ -1,6 +1,10 @@
 package vchat.auth.infra.memory
 
-import vchat.auth.repositories._
+import vchat.auth.domain.models.values.email.{
+  AuthEmailAddress,
+  EncryptedPassword
+}
+import vchat.auth.domain.repositories._
 
 object InMemoryMemberEmailRepository extends MemberEmailRepository {
   private def rawEncryptor(s: String) = s

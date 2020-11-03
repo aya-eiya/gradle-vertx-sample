@@ -1,7 +1,8 @@
-package vchat.state
+package vchat.state.models.values
 
 case class AccessToken(value: String)
 object AccessTokenStatus {
-  val NotExists = AccessTokenStatus(exists = false, expired = false)
+  val NotExists: AccessTokenStatus =
+    AccessTokenStatus(exists = false, expired = false)
 }
 case class AccessTokenStatus(exists: Boolean, expired: Boolean)

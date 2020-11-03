@@ -1,4 +1,6 @@
-package vchat.auth
+package vchat.auth.domain.models
+
+import vchat.auth.domain.models.values.AuthToken
 
 trait Role {}
 

@@ -1,12 +1,8 @@
 package vchat.auth.infra.memory
 
-import vchat.auth.AuthNStatus
-import vchat.auth.repositories.{
-  ApplicationContext,
-  ApplicationStateRepository,
-  LoginContext
-}
-import vchat.state.AccessToken
+import vchat.auth.domain.models.{ApplicationContext, AuthNStatus, LoginContext}
+import vchat.auth.domain.repositories.ApplicationStateRepository
+import vchat.state.models.values.AccessToken
 
 import scala.collection.mutable.{Map => MutMap}
 
