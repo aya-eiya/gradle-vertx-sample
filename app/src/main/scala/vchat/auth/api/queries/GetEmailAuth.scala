@@ -16,8 +16,6 @@ trait GetEmailAuth {
 
   def createStateAndReturnAuthNStatus: EmailAuthNStatus
 
-  def addRetryCount: Unit
-
   def verifyEmailAddress(
       emailAddress: AuthEmailAddress,
       rawPassword: String

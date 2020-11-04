@@ -27,4 +27,5 @@ object StaticEmailAuthorizer
   val tokenStore: StaticAccessTokenStore.type = StaticAccessTokenStore
   override def getAccessToken: AccessToken = tokenStore.getOrCreateAccessToken
 
+  override def incrementRetryCount: Unit = {}
 }

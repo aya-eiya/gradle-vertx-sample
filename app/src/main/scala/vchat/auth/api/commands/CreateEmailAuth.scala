@@ -10,6 +10,8 @@ trait CreateEmailAuth {
 
   def getAccessToken: AccessToken
 
+  def incrementRetryCount: Unit
+
   def createStateAndReturnAuthNStatus: EmailAuthNStatus = {
     val accessToken = getAccessToken
     val authToken = AuthToken(accessToken)

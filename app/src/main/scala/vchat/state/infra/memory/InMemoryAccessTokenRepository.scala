@@ -20,5 +20,5 @@ object InMemoryAccessTokenRepository extends AccessTokenRepository {
   override def verify(token: AccessToken): AccessTokenStatus =
     data.getOrElse(token, AccessTokenStatus.NotExists)
 
-  override def get(): Option[AccessToken] = ???
+  override def get(): Option[AccessToken] = Option.empty
 }
