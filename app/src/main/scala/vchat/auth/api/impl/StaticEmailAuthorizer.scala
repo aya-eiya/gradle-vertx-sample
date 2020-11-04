@@ -25,6 +25,6 @@ object StaticEmailAuthorizer
   override val AuthorizerId: String = "StaticEmailAuthorizer"
 
   val tokenStore: StaticAccessTokenStore.type = StaticAccessTokenStore
-  override def createAccessToken: AccessToken = tokenStore.createAccessToken
+  override def getAccessToken: AccessToken = tokenStore.getOrCreateAccessToken
 
 }

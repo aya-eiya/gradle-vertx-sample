@@ -8,10 +8,10 @@ import vchat.state.models.values.AccessToken
 trait CreateEmailAuth {
   val appStateRepo: ApplicationStateRepository
 
-  def createAccessToken: AccessToken
+  def getAccessToken: AccessToken
 
   def createStateAndReturnAuthNStatus: EmailAuthNStatus = {
-    val accessToken = createAccessToken
+    val accessToken = getAccessToken
     val authToken = AuthToken(accessToken)
     val authNStatus = EmailAuthNStatus(authToken, isAuthed = true)
     appStateRepo.create(accessToken, authNStatus)

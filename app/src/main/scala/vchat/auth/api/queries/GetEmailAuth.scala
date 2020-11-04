@@ -5,13 +5,18 @@ import vchat.auth.domain.repositories.{
   ApplicationStateRepository,
   MemberEmailRepository
 }
+import vchat.state.models.values.AccessToken
 import vchat.utilities.email.EmailAddress
 
 trait GetEmailAuth {
   val emailRepo: MemberEmailRepository
   val appStateRepo: ApplicationStateRepository
 
+  def getAccessToken: AccessToken
+
   def createStateAndReturnAuthNStatus: EmailAuthNStatus
+
+  def addRetryCount: Unit
 
   def verifyEmailAddress(
       emailAddress: AuthEmailAddress,
