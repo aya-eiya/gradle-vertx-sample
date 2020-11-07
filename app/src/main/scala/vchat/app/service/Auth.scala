@@ -45,7 +45,6 @@ class Auth extends Service with GraphQLMixIn {
     val reg: TypeDefinitionRegistry = parser.parse(schema)
     val gen = new SchemaGenerator
     val df = new VertxDataFetcher[JList[EmailAuth]]({ (env, p) =>
-      println(s"here ${env.getField.getName}")
       p.complete(List(EmailAuth("test@test.jp", "password_001")).asJava)
     })
     val wiring = newRuntimeWiring
@@ -58,9 +57,6 @@ class Auth extends Service with GraphQLMixIn {
           )
       )
       .build
-    val graphQL =
-      GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
-    val result = graphQL.execute("{ emailAuths { emailAddress, rawPassword } }")
-    graphQL
+    GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
   }
 }
