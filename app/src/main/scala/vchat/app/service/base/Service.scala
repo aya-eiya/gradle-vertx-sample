@@ -24,15 +24,10 @@ trait RESTMixIn {
 
 trait GraphQLMixIn {
   def graphQLHandler: GraphQL
-  def contextFactory: ContextFactory = { rc: RoutingContext =>
-    println(rc.request().headers().toString)
-    rc
-  }
 
   def handler: Handler[RoutingContext] =
     GraphQLHandler
       .create(graphQLHandler)
-      .queryContext(contextFactory)
 }
 
 abstract class Service extends ScalaVerticle with AppEnv {
