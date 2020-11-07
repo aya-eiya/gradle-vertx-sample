@@ -12,9 +12,9 @@ trait GetEmailAuth {
   val emailRepo: MemberEmailRepository
   val appStateRepo: ApplicationStateRepository
 
-  def getAccessToken: AccessToken
+  protected def getAccessToken: AccessToken
 
-  def createStateAndReturnAuthNStatus: EmailAuthNStatus
+  protected def createStateAndReturnAuthNStatus: EmailAuthNStatus
 
   def verifyEmailAddress(
       emailAddress: AuthEmailAddress,
@@ -25,7 +25,7 @@ trait GetEmailAuth {
       verifyPassword(emailAddress, rawPassword),
       EmailAuthNErrorStatus(EmailAuthNErrorStatus.wrongEmailAddressErrorCode)
     )
-  def verifyPassword(
+  private def verifyPassword(
       emailAddress: AuthEmailAddress,
       rawPassword: String
   ): Either[EmailAuthNErrorStatus, EmailAuthNStatus] =

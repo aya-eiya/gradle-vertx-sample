@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'vchat'
-include('app', 'utilities')
+include('app', 'utilities', 'db')
