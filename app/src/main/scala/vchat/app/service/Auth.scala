@@ -61,7 +61,6 @@ class Auth extends Service with GraphQLMixIn {
     val graphQL =
       GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
     val result = graphQL.execute("{ emailAuths { emailAddress, rawPassword } }")
-    println(result.getData.toString)
     graphQL
   }
 }
