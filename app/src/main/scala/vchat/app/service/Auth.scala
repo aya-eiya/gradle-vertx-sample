@@ -45,26 +45,16 @@ class Auth
 
   def authorizer: StaticEmailAuthorizer.type = StaticEmailAuthorizer
 
-  private def dataFetch(env: DataFetchingEnvironment): Boolean = {
-    val emailAuth =
-      Option(env.getArgument[java.util.Map[String, String]]("input"))
-        .map(_.asScala)
-        .map(input =>
-          (input.get("emailAddress"), input.get("rawPassword")) match {
-            case (Some(emailAddress), Some(rawPassword)) =>
-              Some(EmailAuth(emailAddress, rawPassword))
-            case _ => None
-          }
-        )
-        .flatten
-    println(s"input:$emailAuth")
-    emailAuth match {
-      case Some(EmailAuth(address, pass)) => {
-        exists(AuthEmailAddress(address), pass)
-      }
-      case None => false
-    }
-  }
+  private def dataFetch(env: DataFetchingEnvironment): Boolean =
+    Option(env.getArgument[java.util.Map[String, String]]("input"))
+      .map(_.asScala)
+      .exists(input =>
+        (input.get("emailAddress"), input.get("rawPassword")) match {
+          case (Some(address), Some(pass)) =>
+            exists(AuthEmailAddress(address), pass)
+          case _ => false
+        }
+      )
 
   override def graphQLHandler: GraphQL = {
     val parser = new SchemaParser()
