@@ -6,7 +6,7 @@ import vchat.auth.domain.models.values.email.{
 }
 import vchat.auth.domain.repositories._
 
-object InMemoryMemberEmailRepository extends MemberEmailRepository {
+trait InMemoryMemberEmailRepositoryImpl extends MemberEmailRepository {
   private def rawEncryptor(s: String) = s
   private val data: Map[AuthEmailAddress, EncryptedPassword] = Map(
     AuthEmailAddress("test@test.jp") -> EncryptedPassword(
@@ -23,3 +23,5 @@ object InMemoryMemberEmailRepository extends MemberEmailRepository {
       .get(emailAddress)
       .exists(_.check(rawPassword))
 }
+
+object InMemoryMemberEmailRepository extends InMemoryMemberEmailRepositoryImpl

@@ -23,7 +23,7 @@ object GraphQLHandler {
   private[base] implicit def javaHandler2ScalaHandler(
       handler: JGraphQLHandler
   ): GraphQLHandler = new GraphQLHandler(handler)
-  private[base] implicit def jRoutingContext2RoutingContext(
+  implicit def jRoutingContext2RoutingContext(
       rc: JRoutingContext
   ): RoutingContext = new RoutingContext(rc)
 
@@ -44,14 +44,14 @@ private[base] trait JGraphQLHandlerMethods {
       factory: function.Function[JRoutingContext, Locale]
   ): JGraphQLHandler = innerHandler.locale(factory)
 }
-
 class GraphQLHandler(val innerHandler: JGraphQLHandler)
     extends Handler[RoutingContext]
     with JGraphQLHandlerMethods {
   import GraphQLHandler._
 
   override def handle(event: RoutingContext): Unit =
-    innerHandler.handle(event.asJava.asInstanceOf[JRoutingContext])
+    innerHandler
+      .handle(event.asJava.asInstanceOf[JRoutingContext])
 
   def queryContext(factory: ContextFactory): GraphQLHandler = {
     val f: function.Function[JRoutingContext, AnyRef] = { rc: JRoutingContext =>
