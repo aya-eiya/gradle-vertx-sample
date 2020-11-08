@@ -25,7 +25,7 @@ trait GetEmailAuth {
       verifyPassword(emailAddress, rawPassword),
       EmailAuthNErrorStatus(EmailAuthNErrorStatus.wrongEmailAddressErrorCode)
     )
-  private def verifyPassword(
+  def verifyPassword(
       emailAddress: AuthEmailAddress,
       rawPassword: String
   ): Either[EmailAuthNErrorStatus, EmailAuthNStatus] =

@@ -13,6 +13,7 @@ import io.vertx.ext.web.handler.graphql.VertxDataFetcher
 import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
 import vchat.app.service.base._
 import vchat.auth.api.impl.StaticEmailAuthorizer
+import vchat.auth.domain.models.EmailAuthorizer
 import vchat.auth.domain.models.values.email.AuthEmailAddress
 
 case class EmailAuthInput(
@@ -41,7 +42,7 @@ class Auth extends Service with GraphQLMixIn {
   import vchat.app.service.Auth._
   import scala.collection.JavaConverters._
 
-  def authorizer: StaticEmailAuthorizer.type = StaticEmailAuthorizer
+  def authorizer: EmailAuthorizer = StaticEmailAuthorizer
 
   def exists(emailAuthInput: EmailAuthInput): Boolean =
     authorizer.emailRepo

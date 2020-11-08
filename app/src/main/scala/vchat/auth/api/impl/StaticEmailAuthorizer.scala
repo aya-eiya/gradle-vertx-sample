@@ -1,8 +1,6 @@
 package vchat.auth.api.impl
 
-import vchat.auth.api.commands.CreateEmailAuth
-import vchat.auth.api.queries.GetEmailAuth
-import vchat.auth.domain.models.Authorizer
+import vchat.auth.domain.models.EmailAuthorizer
 import vchat.auth.domain.repositories.{
   ApplicationStateRepository,
   MemberEmailRepository
@@ -14,15 +12,13 @@ import vchat.auth.infra.memory.{
 import vchat.state.api.impl.StaticAccessTokenStore
 import vchat.state.models.values.AccessToken
 
-object StaticEmailAuthorizer
-    extends Authorizer
-    with GetEmailAuth
-    with CreateEmailAuth {
+object StaticEmailAuthorizer extends EmailAuthorizer {
+
+  override val AuthorizerId: String = "StaticEmailAuthorizer"
 
   override val emailRepo: MemberEmailRepository = InMemoryMemberEmailRepository
   override val appStateRepo: ApplicationStateRepository =
     InMemoryApplicationStateRepository
-  override val AuthorizerId: String = "StaticEmailAuthorizer"
 
   val tokenStore: StaticAccessTokenStore.type = StaticAccessTokenStore
   override def getAccessToken: AccessToken = tokenStore.getOrCreateAccessToken
