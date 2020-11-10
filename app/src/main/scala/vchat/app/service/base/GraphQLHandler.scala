@@ -51,6 +51,7 @@ class GraphQLHandler(val innerHandler: JGraphQLHandler)
 
   override def handle(event: RoutingContext): Unit =
     innerHandler
+      .queryContext(jRoutingContext2RoutingContext)
       .handle(event.asJava.asInstanceOf[JRoutingContext])
 
   def queryContext(factory: ContextFactory): GraphQLHandler = {

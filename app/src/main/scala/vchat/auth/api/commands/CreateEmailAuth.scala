@@ -2,21 +2,19 @@ package vchat.auth.api.commands
 
 import vchat.auth.domain.models.values.AuthToken
 import vchat.auth.domain.models.values.email.EmailAuthNStatus
-import vchat.auth.domain.repositories.ApplicationStateRepository
 import vchat.state.models.values.AccessToken
+import vchat.state.repositories.ApplicationContextRepository
 
 trait CreateEmailAuth {
-  val appStateRepo: ApplicationStateRepository
+  val appStateRepo: ApplicationContextRepository
 
   def getAccessToken: AccessToken
 
   def incrementRetryCount: Unit
 
   def createStateAndReturnAuthNStatus: EmailAuthNStatus = {
-    val accessToken = getAccessToken
-    val authToken = AuthToken(accessToken)
+    val authToken = AuthToken(getAccessToken)
     val authNStatus = EmailAuthNStatus(authToken, isAuthed = true)
-    appStateRepo.create(accessToken, authNStatus)
     authNStatus
   }
 }

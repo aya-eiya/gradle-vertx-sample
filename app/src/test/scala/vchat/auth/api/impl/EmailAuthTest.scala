@@ -2,13 +2,16 @@ package vchat.auth.api.impl
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import vchat.auth.domain.models.values.email.AuthEmailAddress
-import vchat.auth.domain.repositories.ApplicationStateRepository
-import vchat.auth.infra.memory.InMemoryApplicationStateRepository
+import vchat.auth.domain.models.values.email.{
+  AuthEmailAddress,
+  EmailAuthNErrorStatus
+}
+import vchat.auth.infra.memory.InMemoryApplicationContextRepository
+import vchat.state.repositories.ApplicationContextRepository
 
 class EmailAuthTest extends AnyFunSpec with Matchers {
-  val appContext: ApplicationStateRepository =
-    InMemoryApplicationStateRepository
+  val appContext: ApplicationContextRepository =
+    InMemoryApplicationContextRepository
 
   describe("メールアドレスによる認証ができる") {
     describe("メールアドレスが形式として正しい場合") {
@@ -48,8 +51,9 @@ class EmailAuthTest extends AnyFunSpec with Matchers {
         new EmailAuth(AuthEmailAddress("test_test.jp"), "rightPassword")
           .tryAuth()
       it("MailAuthからメールアドレス形式違反メッセージを取得できる") {
-        val code = 100002
-        val message = "Wrong email address"
+        val err = EmailAuthNErrorStatus.wrongEmailAddressErrorCode
+        val code = err.code
+        val message = err.message
         assert(result.isLeft)
         result.fold(
           _.code.describe,

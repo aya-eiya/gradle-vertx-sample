@@ -1,6 +1,17 @@
 package vchat.auth.domain.models
 
 import vchat.auth.domain.models.values.{AuthNErrorCode, AuthToken}
+import vchat.logging.ErrorStatus
+import vchat.state.models.values.AccessToken
+
+case class EmptyAuthNStatus(override val token: AuthToken) extends AuthNStatus {
+  override val isAuthed: Boolean = false
+  override val retryTimes: Int = 0
+  override val maxRetryTime: Int = Int.MaxValue
+}
+object AuthNStatus {
+  def empty(token: AccessToken) = EmptyAuthNStatus(AuthToken(token))
+}
 
 /**
   * 認証状態を示す
@@ -12,7 +23,7 @@ trait AuthNStatus {
   val maxRetryTime: Int
 }
 
-trait AuthNErrorStatus {
+trait AuthNErrorStatus extends ErrorStatus {
   val code: AuthNErrorCode
 }
 

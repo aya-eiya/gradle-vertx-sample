@@ -1,5 +1,7 @@
 package vchat.auth.domain.models.values
 
-case class AuthNErrorCode(code: Int, message: String) {
-  def describe: String = s"[AuthNError:$code]$message"
+import vchat.logging.ErrorCode
+
+case class AuthNErrorCode(code: Int, message: String) extends ErrorCode {
+  val errorType = "AuthError"
 }
