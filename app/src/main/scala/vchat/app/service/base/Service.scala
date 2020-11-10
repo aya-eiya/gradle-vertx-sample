@@ -8,10 +8,9 @@ import io.vertx.scala.core.http.{HttpServerRequest, HttpServerResponse}
 import io.vertx.scala.ext.web.handler.LoggerHandler
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import vchat.app.env.AppEnv
-
 import scala.concurrent.Future
 
-trait RESTMixIn {
+trait RESTMixIn extends ScalaVerticle {
   def restHandler(req: HttpServerRequest, res: HttpServerResponse): Unit
   def handler: Handler[RoutingContext] =
     (context: RoutingContext) =>
@@ -21,7 +20,7 @@ trait RESTMixIn {
       )
 }
 
-trait GraphQLMixIn {
+trait GraphQLMixIn extends ScalaVerticle {
   def graphQLHandler: GraphQL
 
   def handler: Handler[RoutingContext] =

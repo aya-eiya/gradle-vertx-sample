@@ -6,11 +6,9 @@ import vchat.state.models.values.AccessToken
 
 trait CreateEmailAuth {
   def incrementRetryCount(): Unit
-  def createStateAndReturnAuthNStatus(
+  def createAuthNStatus(
       accessToken: AccessToken
-  ): EmailAuthNStatus = {
-    val authToken = AuthToken(accessToken)
-    val authNStatus = EmailAuthNStatus(authToken, isAuthed = true)
-    authNStatus
-  }
+  ): EmailAuthNStatus =
+    EmailAuthNStatus(AuthToken(accessToken), isAuthed = true)
+
 }

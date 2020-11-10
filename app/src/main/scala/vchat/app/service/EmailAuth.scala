@@ -11,10 +11,10 @@ import graphql.schema.idl.{
 }
 import io.vertx.ext.web.handler.graphql.VertxDataFetcher
 import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
-import io.vertx.scala.ext.web.RoutingContext
 import vchat.app.service.base._
 import vchat.auth.api.EmailAuthorizer
 import vchat.auth.api.impl.StaticEmailAuthorizer
+import vchat.auth.domain.models.LoginContext
 import vchat.auth.domain.models.values.email.{
   AuthEmailAddress,
   EmailAuthNErrorStatus,
@@ -23,7 +23,6 @@ import vchat.auth.domain.models.values.email.{
 import vchat.logging.ErrorDescription
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
-import vchat.state.models.AccessContext
 import vchat.state.models.values.AccessToken
 
 case class EmailAuthInput(
@@ -64,10 +63,9 @@ private object ErrorDescriptions {
 
 }
 
-object Auth {
+object EmailAuth {
   type ResponseData = Either[EmailAuthNErrorStatus, Status]
-  def accessTokenHeaderName = "Access-Token"
-  def verticleName: String = nameForVerticle[Auth]
+  def verticleName: String = nameForVerticle[EmailAuth]
   def schema: String =
     """
       |type Status {
@@ -85,12 +83,15 @@ object Auth {
       |""".stripMargin
 }
 
-class Auth extends Service with GraphQLMixIn {
-  import Auth._
+class EmailAuth
+    extends Service
+    with GraphQLMixIn
+    with UseGraphQLApplicationContext {
+  import EmailAuth._
   import scala.collection.JavaConverters._
 
   def authorizer: EmailAuthorizer = StaticEmailAuthorizer
-  def contextManager: ApplicationContextManager =
+  override def contextManager: ApplicationContextManager =
     StaticApplicationContextManager
 
   private def verifyPassword(
@@ -135,6 +136,7 @@ class Auth extends Service with GraphQLMixIn {
       }
       t = getToken(env).getOrElse(createToken)
       c <- verifyPassword(t, a)
+      _ = contextManager.setContext(t, LoginContext(t, c))
     } yield Status(c.token.toString)
   }
 
@@ -149,31 +151,6 @@ class Auth extends Service with GraphQLMixIn {
         )
       )
       .map(_.asScala.toMap)
-
-  private def createToken: AccessToken = {
-    val newToken = contextManager.createAccessToken
-    contextManager.createApplicationContext(newToken)
-    newToken
-  }
-
-  private def getToken(
-      env: DataFetchingEnvironment
-  ): Option[AccessToken] =
-    for {
-      c <-
-        env
-          .getContext[RoutingContext]()
-          .request()
-          .headers()
-          .get(accessTokenHeaderName)
-      _ = println(s"c:$c")
-      t = AccessToken(c)
-      _ = println(s"t:$t")
-      v <- contextManager.getApplicationContext(t)
-      _ = println(s"v:$v")
-      o <- v.get[AccessContext]
-      _ = println(s"o:$o")
-    } yield t
 
   override def graphQLHandler: GraphQL = {
     val parser = new SchemaParser
@@ -199,4 +176,5 @@ class Auth extends Service with GraphQLMixIn {
       .build
     GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
   }
+
 }

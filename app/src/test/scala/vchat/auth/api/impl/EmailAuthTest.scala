@@ -2,6 +2,7 @@ package vchat.auth.api.impl
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
+import vchat.auth.domain.models.LoginContext
 import vchat.auth.domain.models.values.email.{
   AuthEmailAddress,
   EmailAuthNErrorStatus
@@ -24,17 +25,20 @@ class EmailAuthTest extends AnyFunSpec with Matchers {
           assert(result.exists(_.isAuthed))
         }
         it("認証済みのAuthNがログインコンテキストから取得できる") {
-          val hasLoginState = result.right
-            .map(
-              _.token.token
-            )
-            .flatMap(
-              appContext.contextOf(_).toRight(fail("context not found"))
-            )
-            .exists(
-              _.loginContext.authNStatus.isAuthed
-            )
-          assert(hasLoginState)
+          (for {
+            r <- result
+            t = r.token.token
+            ac <-
+              appContext
+                .contextOf(t)
+                .toRight(fail(s"application context($t) not found"))
+            lc <-
+              ac.get[LoginContext].toRight(fail(s"login context($t) not found"))
+            b = lc.authNStatus.isAuthed
+          } yield b) match {
+            case Right(hasLoginState) => assert(hasLoginState)
+            case Left(err)            => fail(s"error $err")
+          }
         }
       }
       describe("パスワードが正しくない場合") {

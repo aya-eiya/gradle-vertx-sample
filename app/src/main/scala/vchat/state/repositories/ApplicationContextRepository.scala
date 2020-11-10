@@ -1,12 +1,14 @@
 package vchat.state.repositories
 
-import vchat.state.models.{AccessContext, ApplicationContext}
+import vchat.state.models.{AccessContext, ApplicationContext, Context}
 import vchat.state.models.values.{
   AccessToken,
   AccessTokenStatus,
   TimeoutAccessTokenStatus
 }
 import vchat.utilities.time.AppTime
+
+import scala.reflect.ClassTag
 
 private object ApplicationContextRepository extends AppTime {
   def resetTimeout(accessTokenStatus: AccessTokenStatus): AccessTokenStatus =
@@ -18,9 +20,15 @@ private object ApplicationContextRepository extends AppTime {
 }
 
 trait ApplicationContextRepository {
+  import ApplicationContextRepository._
   def create(accessToken: AccessToken): Unit
   def contextOf(accessToken: AccessToken): Option[ApplicationContext]
-  def put(accessToken: AccessToken, accessTokenStatus: AccessTokenStatus): Unit
+
+  def putContext[T <: Context: ClassTag](
+      accessToken: AccessToken,
+      context: T
+  ): Unit
+
   def resetAccessTokenTimeout(accessToken: AccessToken): Unit =
     for {
       a <- contextOf(accessToken)
@@ -28,8 +36,8 @@ trait ApplicationContextRepository {
         a.childContexts
           .find(_.isInstanceOf[AccessContext])
           .map(_.asInstanceOf[AccessContext])
-    } yield put(
+    } yield putContext(
       accessToken,
-      ApplicationContextRepository.resetTimeout(b.status)
+      AccessContext(resetTimeout(b.status))
     )
 }

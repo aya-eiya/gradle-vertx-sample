@@ -7,7 +7,7 @@ import vchat.app.service._
 private[env] object AppEnv {
   type Allowed = Set[HttpMethod]
   private val env: Map[Class[_], Env] = Map(
-    classOf[Auth] -> Env(8081, "/auth", Set(POST)),
+    classOf[EmailAuth] -> Env(8081, "/auth", Set(POST)),
     classOf[Message] -> Env(8082, "/message", Set(GET)),
     classOf[User] -> Env(8083, "/user", Set(GET, POST, PUT, DELETE))
   )

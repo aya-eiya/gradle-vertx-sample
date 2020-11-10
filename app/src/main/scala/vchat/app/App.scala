@@ -10,7 +10,7 @@ object App {
   val vertx = Vertx.vertx()
   def main(args: Array[String]): Unit =
     Seq(
-      vertx.deployVerticleFuture(Auth.verticleName),
+      vertx.deployVerticleFuture(EmailAuth.verticleName),
       vertx.deployVerticleFuture(Message.verticleName),
       vertx.deployVerticleFuture(User.verticleName)
     ).foreach(_.onComplete {

@@ -9,7 +9,7 @@ import vchat.utilities.email.EmailAddress
 trait GetEmailAuth {
   val emailRepo: MemberEmailRepository
 
-  protected def createStateAndReturnAuthNStatus(
+  protected def createAuthNStatus(
       accessToken: AccessToken
   ): EmailAuthNStatus
 
@@ -22,7 +22,7 @@ trait GetEmailAuth {
       _ <- verifyEmailAddress(emailAddress)
       r <- Either.cond(
         emailRepo.exists(emailAddress, rawPassword),
-        createStateAndReturnAuthNStatus(accessToken),
+        createAuthNStatus(accessToken),
         EmailAuthNErrorStatus(
           EmailAuthNErrorStatus.memberNotFound,
           ErrorDescription(

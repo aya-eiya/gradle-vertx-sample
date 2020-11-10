@@ -2,15 +2,12 @@ package vchat.state.infra.memory
 
 import vchat.auth.domain.models.LoginContext
 import vchat.auth.domain.models.values.AuthNStatus
-import vchat.state.models.{AccessContext, ApplicationContext}
-import vchat.state.models.values.{
-  AccessToken,
-  AccessTokenStatus,
-  TimeoutAccessTokenStatus
-}
+import vchat.state.models.{AccessContext, ApplicationContext, Context}
+import vchat.state.models.values.{AccessToken, TimeoutAccessTokenStatus}
 import vchat.state.repositories.ApplicationContextRepository
 
 import scala.collection.mutable.{Map => MutMap}
+import scala.reflect.ClassTag
 
 object InMemoryApplicationContextRepository
     extends ApplicationContextRepository {
@@ -34,15 +31,15 @@ object InMemoryApplicationContextRepository
       )
     )
 
-  override def put(
+  override def putContext[T <: Context: ClassTag](
       accessToken: AccessToken,
-      accessTokenStatus: AccessTokenStatus
+      context: T
   ): Unit =
     for {
       d <- data.get(accessToken)
-      c <- d.get[AccessContext]
+      _ <- d.get[AccessContext]
     } yield data.put(
       accessToken,
-      d.put(AccessContext(c.status))
+      d.put(context)
     )
 }

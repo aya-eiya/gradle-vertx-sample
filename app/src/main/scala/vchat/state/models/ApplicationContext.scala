@@ -3,7 +3,7 @@ package vchat.state.models
 import scala.reflect.ClassTag
 
 case class ApplicationContext(childContexts: Seq[_ <: Context])
-    extends Context {
+    extends RootContext {
   def addAll(appends: Seq[_ <: Context]): ApplicationContext =
     ApplicationContext(
       childContexts.filterNot(c =>
