@@ -1,6 +1,7 @@
 package vchat.auth.infra.memory
 
-import vchat.auth.domain.models.{AuthNStatus, LoginContext}
+import vchat.auth.domain.models.values.AuthNStatus
+import vchat.auth.domain.models.LoginContext
 import vchat.state.models.ApplicationContext
 import vchat.state.models.values.AccessToken
 import vchat.state.repositories.ApplicationContextRepository
@@ -18,7 +19,13 @@ object InMemoryApplicationContextRepository
     data.put(
       accessToken,
       ApplicationContext(
-        Seq(LoginContext(accessToken, AuthNStatus.empty(accessToken)))
+        Seq(
+          LoginContext(
+            accessToken,
+            AuthNStatus
+              .empty(accessToken)
+          )
+        )
       )
     )
 }

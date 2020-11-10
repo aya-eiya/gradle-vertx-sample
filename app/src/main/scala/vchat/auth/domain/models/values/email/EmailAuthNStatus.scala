@@ -1,7 +1,6 @@
 package vchat.auth.domain.models.values.email
 
-import vchat.auth.domain.models.values.AuthToken
-import vchat.auth.domain.models.AuthNStatus
+import vchat.auth.domain.models.values.{AuthToken, AuthNStatus}
 
 case class EmailAuthNStatus(
     override val token: AuthToken,
