@@ -1,4 +1,4 @@
-package vchat.auth.domain.models
+package vchat.auth.api
 
 import vchat.auth.api.commands.CreateEmailAuth
 import vchat.auth.api.queries.GetEmailAuth

@@ -6,7 +6,7 @@ import vchat.auth.domain.models.values.email.{
   AuthEmailAddress,
   EmailAuthNErrorStatus
 }
-import vchat.auth.infra.memory.InMemoryApplicationContextRepository
+import vchat.state.infra.memory.InMemoryApplicationContextRepository
 import vchat.state.repositories.ApplicationContextRepository
 
 class EmailAuthTest extends AnyFunSpec with Matchers {

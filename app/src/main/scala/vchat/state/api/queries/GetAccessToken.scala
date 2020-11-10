@@ -1,12 +1,11 @@
 package vchat.state.api.queries
 
-import vchat.state.models.values.AccessToken
+import vchat.state.models.values.{AccessToken, AccessTokenStatus}
 import vchat.state.repositories.AccessTokenRepository
 
 trait GetAccessToken {
   val tokenRepo: AccessTokenRepository
 
-  def getAccessToken: Option[AccessToken] = tokenRepo.get()
-
-  def getOrCreateAccessToken: AccessToken = tokenRepo.getOrCreate()
+  def verifyAccessToken(token: AccessToken): AccessTokenStatus =
+    tokenRepo.verify(token)
 }
