@@ -32,7 +32,7 @@ case class EmailAuthInput(
   def emailAddress: AuthEmailAddress = AuthEmailAddress(rawEmailAddress)
 }
 
-case class Status(token: String)
+case class LoginStatusData(accessToken: String, authToken: String)
 
 private object ErrorDescriptions {
   def dataNotFound: ErrorDescription =
@@ -61,23 +61,31 @@ private object ErrorDescriptions {
       reference = ""
     )
 
+  def invalidAccessToken: ErrorDescription =
+    ErrorDescription(
+      reason = "accessTokenが正しくありません",
+      todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
+      reference = ""
+    )
 }
 
 object EmailAuth {
-  type ResponseData = Either[EmailAuthNErrorStatus, Status]
+  type ResponseData = Either[EmailAuthNErrorStatus, LoginStatusData]
   def verticleName: String = nameForVerticle[EmailAuth]
   def schema: String =
     """
       |type Status {
-      |  token: String
+      |  accessToken: String!
+      |  authToken: String
       |}
       |
       |input EmailAuthInput {
-      |  emailAddress: String
-      |  rawPassword: String
+      |  emailAddress: String!
+      |  rawPassword: String!
       |}
       |
       |type Query {
+      |  accessToken: String
       |  verifyPassword(input: EmailAuthInput): Status
       |}
       |""".stripMargin
@@ -103,10 +111,9 @@ class EmailAuth
       input.emailAddress,
       input.rawPassword
     )
-
-  private def dataFetch(
+  private def login(
       env: DataFetchingEnvironment
-  ): ResponseData = {
+  ): ResponseData =
     for {
       d <- getInputValues(env)
       a <- (d.get("emailAddress"), d.get("rawPassword")) match {
@@ -134,12 +141,29 @@ class EmailAuth
             )
           )
       }
-      t = getToken(env).getOrElse(createToken)
+      t <- getToken(env).toRight(
+        EmailAuthNErrorStatus(
+          EmailAuthNErrorStatus.invalidAccessTokenErrorCode,
+          ErrorDescriptions.emailAddressAndPasswordNotFound
+        )
+      )
       c <- verifyPassword(t, a)
       _ = contextManager.setContext(t, LoginContext(t, c))
-    } yield Status(c.token.toString)
-  }
+    } yield LoginStatusData(t.value, c.token.base64)
 
+  private def accessToken(env: DataFetchingEnvironment) =
+    getToken(env).getOrElse(createToken).value
+
+  def verifyPasswordDataFetcher: VertxDataFetcher[LoginStatusData] =
+    new VertxDataFetcher[LoginStatusData]((env, p) =>
+      login(env) match {
+        case Right(status) => p.complete(status)
+        case Left(err)     => p.fail(err.toString)
+      }
+    )
+
+  def accessTokenDataFetcher: VertxDataFetcher[String] =
+    new VertxDataFetcher[String]((env, p) => p.complete(accessToken(env)))
   private def getInputValues(
       env: DataFetchingEnvironment
   ): Either[EmailAuthNErrorStatus, Map[String, String]] =
@@ -156,22 +180,19 @@ class EmailAuth
     val parser = new SchemaParser
     val reg: TypeDefinitionRegistry = parser.parse(schema)
     val gen = new SchemaGenerator
-
-    val vdf =
-      new VertxDataFetcher[Status]((env, p) =>
-        dataFetch(env) match {
-          case Right(status) => p.complete(status)
-          case Left(err)     => p.fail(err.toString)
-        }
-      )
     val wiring = newRuntimeWiring
       .`type`(
         "Query",
         (builder: TypeRuntimeWiring.Builder) =>
-          builder.dataFetcher(
-            "verifyPassword",
-            vdf
-          )
+          builder
+            .dataFetcher(
+              "verifyPassword",
+              verifyPasswordDataFetcher
+            )
+            .dataFetcher(
+              "accessToken",
+              accessTokenDataFetcher
+            )
       )
       .build
     GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
