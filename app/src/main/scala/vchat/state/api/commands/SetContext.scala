@@ -1,5 +1,6 @@
 package vchat.state.api.commands
 
+import cats.effect.IO
 import vchat.state.models.Context
 import vchat.state.models.values.AccessToken
 import vchat.state.repositories.ApplicationContextRepository
@@ -12,6 +13,6 @@ trait SetContext {
   def setContext[T <: Context: ClassTag](
       accessToken: AccessToken,
       context: T
-  ): Unit = appContextRepo.putContext(accessToken, context)
+  ): IO[Unit] = appContextRepo.putContext(accessToken, context)
 
 }

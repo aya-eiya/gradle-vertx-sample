@@ -1,5 +1,7 @@
 package vchat.state.repositories
 
+import cats.data.OptionT
+import cats.effect.IO
 import vchat.state.models.{AccessContext, ApplicationContext, Context}
 import vchat.state.models.values.{
   AccessToken,
@@ -11,33 +13,36 @@ import vchat.utilities.time.AppTime
 import scala.reflect.ClassTag
 
 private object ApplicationContextRepository extends AppTime {
-  def resetTimeout(accessTokenStatus: AccessTokenStatus): AccessTokenStatus =
-    if (accessTokenStatus.exists) accessTokenStatus
+  def resetTimeout(
+      accessTokenStatus: AccessTokenStatus
+  ): IO[AccessTokenStatus] =
+    if (accessTokenStatus.exists) IO(accessTokenStatus)
     else
-      TimeoutAccessTokenStatus(
-        currentTimeMillis + defaultTokenTimeout
+      IO(
+        TimeoutAccessTokenStatus(
+          currentTimeMillis + defaultTokenTimeout
+        )
       )
 }
 
 trait ApplicationContextRepository {
   import ApplicationContextRepository._
-  def create(accessToken: AccessToken): Unit
-  def contextOf(accessToken: AccessToken): Option[ApplicationContext]
+  def create(accessToken: AccessToken): IO[Unit]
+  def contextOf(accessToken: AccessToken): OptionT[IO, ApplicationContext]
 
   def putContext[T <: Context: ClassTag](
       accessToken: AccessToken,
       context: T
-  ): Unit
+  ): IO[Unit]
 
-  def resetAccessTokenTimeout(accessToken: AccessToken): Unit =
+  def resetAccessTokenTimeout(accessToken: AccessToken): OptionT[IO, Unit] =
     for {
       a <- contextOf(accessToken)
-      b <-
+      b =
         a.childContexts
           .find(_.isInstanceOf[AccessContext])
           .map(_.asInstanceOf[AccessContext])
-    } yield putContext(
-      accessToken,
-      AccessContext(resetTimeout(b.status))
-    )
+      c <- OptionT(IO(b))
+      d <- OptionT(resetTimeout(c.status).option)
+    } yield putContext[AccessContext](accessToken, AccessContext(d))
 }

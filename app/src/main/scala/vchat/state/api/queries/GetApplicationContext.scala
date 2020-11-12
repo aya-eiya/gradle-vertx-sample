@@ -1,5 +1,7 @@
 package vchat.state.api.queries
 
+import cats.data.OptionT
+import cats.effect.IO
 import vchat.state.models.ApplicationContext
 import vchat.state.models.values.AccessToken
 import vchat.state.repositories.ApplicationContextRepository
@@ -9,5 +11,5 @@ trait GetApplicationContext {
 
   def getApplicationContext(
       accessToken: AccessToken
-  ): Option[ApplicationContext] = appContextRepo.contextOf(accessToken)
+  ): OptionT[IO, ApplicationContext] = appContextRepo.contextOf(accessToken)
 }

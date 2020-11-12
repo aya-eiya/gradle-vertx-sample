@@ -1,5 +1,7 @@
 package vchat.app.service.base
 
+import cats.data.OptionT
+import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
 import io.vertx.scala.ext.web.RoutingContext
 import vchat.state.api.ApplicationContextManager
@@ -14,29 +16,35 @@ trait UseWebApplicationContext {
   import UseWebApplicationContext._
   def contextManager: ApplicationContextManager
 
-  def createToken: AccessToken = {
-    val newToken = contextManager.createAccessToken
-    contextManager.createApplicationContext(newToken)
-    newToken
-  }
+  def createToken: IO[AccessToken] =
+    for {
+      newToken <- contextManager.createAccessToken
+      _ <- contextManager.createApplicationContext(newToken)
+    } yield newToken
 
   def getToken(
       context: RoutingContext
-  ): Option[AccessToken] =
+  ): OptionT[IO, AccessToken] =
     for {
-      c <-
+      c <- getHeaderToken(context)
+      t = AccessToken(c)
+      v <- contextManager.getApplicationContext(t)
+      _ <- OptionT(IO(v.get[AccessContext]))
+    } yield t
+
+  private def getHeaderToken(context: RoutingContext) =
+    OptionT(
+      IO(
         context
           .request()
           .headers()
           .get(accessTokenHeaderName)
-      t = AccessToken(c)
-      v <- contextManager.getApplicationContext(t)
-      _ <- v.get[AccessContext]
-    } yield t
+      )
+    )
 }
 
 trait UseGraphQLApplicationContext extends UseWebApplicationContext {
   def getToken(
       env: DataFetchingEnvironment
-  ): Option[AccessToken] = getToken(env.getContext[RoutingContext])
+  ): OptionT[IO, AccessToken] = getToken(env.getContext[RoutingContext])
 }

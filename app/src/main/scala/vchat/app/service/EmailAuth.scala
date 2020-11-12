@@ -1,5 +1,7 @@
 package vchat.app.service
 
+import cats.data.EitherT
+import cats.effect.IO
 import graphql.GraphQL
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
@@ -35,13 +37,13 @@ case class EmailAuthInput(
 case class LoginStatusData(accessToken: String, authToken: String)
 
 private object ErrorDescriptions {
+
   def dataNotFound: ErrorDescription =
     ErrorDescription(
       reason = "送信データが取得できませんでした",
       todo = "データの送信方法が間違っている可能性があります",
       reference = ""
     )
-
   def emailAddressNotFound: ErrorDescription =
     ErrorDescription(
       reason = "emailAddressが入力されていません",
@@ -60,17 +62,23 @@ private object ErrorDescriptions {
       todo = "emailAddressとpasswordは必須です",
       reference = ""
     )
-
   def invalidAccessToken: ErrorDescription =
     ErrorDescription(
       reason = "accessTokenが正しくありません",
       todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
       reference = ""
     )
+  def failedToSetContext: ErrorDescription =
+    ErrorDescription(
+      reason = "情報の保存に失敗しました",
+      todo = "システムの管理者に連絡してください",
+      reference = ""
+    )
+
 }
 
 object EmailAuth {
-  type ResponseData = Either[EmailAuthNErrorStatus, LoginStatusData]
+  type ResponseData = EitherT[IO, EmailAuthNErrorStatus, LoginStatusData]
   def verticleName: String = nameForVerticle[EmailAuth]
   def schema: String =
     """
@@ -105,42 +113,52 @@ class EmailAuth
   private def verifyPassword(
       accessToken: AccessToken,
       input: EmailAuthInput
-  ): Either[EmailAuthNErrorStatus, EmailAuthNStatus] =
+  ): EitherT[IO, EmailAuthNErrorStatus, EmailAuthNStatus] =
     authorizer.verifyPassword(
       accessToken,
       input.emailAddress,
       input.rawPassword
     )
+
+  private def verifyInputT(
+      inputMap: Map[String, String]
+  ): EitherT[IO, EmailAuthNErrorStatus, EmailAuthInput] =
+    EitherT.fromEither(verifyInput(inputMap))
+  private def verifyInput(
+      inputMap: Map[String, String]
+  ): Either[EmailAuthNErrorStatus, EmailAuthInput] =
+    (inputMap.get("emailAddress"), inputMap.get("rawPassword")) match {
+      case (Some(address), Some(pass)) =>
+        Right(EmailAuthInput(address, pass))
+      case (Some(_), None) =>
+        Left(
+          EmailAuthNErrorStatus(
+            EmailAuthNErrorStatus.memberNotFound,
+            ErrorDescriptions.emailAddressNotFound
+          )
+        )
+      case (None, Some(_)) =>
+        Left(
+          EmailAuthNErrorStatus(
+            EmailAuthNErrorStatus.memberNotFound,
+            ErrorDescriptions.passwordNotFound
+          )
+        )
+      case (None, None) =>
+        Left(
+          EmailAuthNErrorStatus(
+            EmailAuthNErrorStatus.memberNotFound,
+            ErrorDescriptions.emailAddressAndPasswordNotFound
+          )
+        )
+    }
+
   private def login(
       env: DataFetchingEnvironment
   ): ResponseData =
     for {
       d <- getInputValues(env)
-      a <- (d.get("emailAddress"), d.get("rawPassword")) match {
-        case (Some(address), Some(pass)) =>
-          Right(EmailAuthInput(address, pass))
-        case (Some(_), None) =>
-          Left(
-            EmailAuthNErrorStatus(
-              EmailAuthNErrorStatus.memberNotFound,
-              ErrorDescriptions.emailAddressNotFound
-            )
-          )
-        case (None, Some(_)) =>
-          Left(
-            EmailAuthNErrorStatus(
-              EmailAuthNErrorStatus.memberNotFound,
-              ErrorDescriptions.passwordNotFound
-            )
-          )
-        case (None, None) =>
-          Left(
-            EmailAuthNErrorStatus(
-              EmailAuthNErrorStatus.memberNotFound,
-              ErrorDescriptions.emailAddressAndPasswordNotFound
-            )
-          )
-      }
+      a <- verifyInputT(d)
       t <- getToken(env).toRight(
         EmailAuthNErrorStatus(
           EmailAuthNErrorStatus.invalidAccessTokenErrorCode,
@@ -148,33 +166,58 @@ class EmailAuth
         )
       )
       c <- verifyPassword(t, a)
-      _ = contextManager.setContext(t, LoginContext(t, c))
+      _ <- EitherT.right(setContext(t, c))
     } yield LoginStatusData(t.value, c.token.base64)
 
-  private def accessToken(env: DataFetchingEnvironment) =
-    getToken(env).getOrElse(createToken).value
+  private def setContext(
+      token: AccessToken,
+      status: EmailAuthNStatus
+  ): IO[Unit] = contextManager.setContext(token, LoginContext(token, status))
+
+  private def accessToken(env: DataFetchingEnvironment): IO[AccessToken] =
+    getToken(env).getOrElseF(createToken)
 
   def verifyPasswordDataFetcher: VertxDataFetcher[LoginStatusData] =
     new VertxDataFetcher[LoginStatusData]((env, p) =>
-      login(env) match {
-        case Right(status) => p.complete(status)
-        case Left(err)     => p.fail(err.toString)
-      }
+      login(env)
+        .transform {
+          case Right(status) => Right(p.complete(status))
+          case Left(err)     => Left(p.fail(err.toString))
+        }
+        .value
+        .unsafeRunAsync {
+          case Right(value)    => println(value)
+          case Left(throwable) => println(throwable)
+        }
     )
 
   def accessTokenDataFetcher: VertxDataFetcher[String] =
-    new VertxDataFetcher[String]((env, p) => p.complete(accessToken(env)))
+    new VertxDataFetcher[String]((env, p) =>
+      (for {
+        t <- accessToken(env)
+      } yield p
+        .complete(t.value))
+        .unsafeRunAsync {
+          case Right(value)    => println(value)
+          case Left(throwable) => println(throwable)
+        }
+    )
+
   private def getInputValues(
       env: DataFetchingEnvironment
-  ): Either[EmailAuthNErrorStatus, Map[String, String]] =
-    Option(env.getArgument[java.util.Map[String, String]]("input"))
-      .toRight(
-        EmailAuthNErrorStatus(
-          EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
-          ErrorDescriptions.dataNotFound
-        )
+  ): EitherT[IO, EmailAuthNErrorStatus, Map[String, String]] =
+    EitherT(
+      IO(
+        Option(env.getArgument[java.util.Map[String, String]]("input"))
+          .toRight(
+            EmailAuthNErrorStatus(
+              EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
+              ErrorDescriptions.dataNotFound
+            )
+          )
+          .map(_.asScala.toMap)
       )
-      .map(_.asScala.toMap)
+    )
 
   override def graphQLHandler: GraphQL = {
     val parser = new SchemaParser
