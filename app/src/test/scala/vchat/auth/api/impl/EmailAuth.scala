@@ -14,12 +14,14 @@ import vchat.logging.ErrorDescription
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
 
-class EmailAuth(val emailAddress: AuthEmailAddress, val rawPassword: String)
-    extends AuthN
+case class EmailAuth(
+    emailAddress: AuthEmailAddress,
+    rawPassword: String
+) extends AuthN
     with UseWebApplicationContext {
   def authorizer: EmailAuthorizer = StaticEmailAuthorizer
 
-  def failedToCreateToken: ErrorDescription =
+  private def failedToCreateToken: ErrorDescription =
     ErrorDescription(
       reason = "アクセストークンの生成に失敗しました",
       todo = "",
@@ -33,7 +35,15 @@ class EmailAuth(val emailAddress: AuthEmailAddress, val rawPassword: String)
     for {
       token <- EitherT.right(createToken)
       s <- authorizer.verifyPassword(token, emailAddress, rawPassword)
-      _ = contextManager.setContext(token, LoginContext(token, s))
+      _ <-
+        contextManager
+          .setContext(token, LoginContext(token, s))
+          .toRight(
+            EmailAuthNErrorStatus(
+              EmailAuthNErrorStatus.systemErrorCode,
+              failedToCreateToken
+            )
+          )
     } yield s
   }
 

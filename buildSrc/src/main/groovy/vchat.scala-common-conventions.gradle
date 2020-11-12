@@ -25,6 +25,7 @@ ext {
     junitApiVersion = '5.7.0'
     scalaTestVersion = '3.2.2'
     junitRunnerVersion = '0.1.8'
+    catsEffectTestingScalaTestVersion = '0.4.2'
 }
 
 repositories {
@@ -39,7 +40,8 @@ dependencies {
 
     // Use JUnit Jupiter API & ScalaTest for testing.
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitApiVersion}",
-                       "org.scalatest:scalatest_${scalaVersion}:${scalaTestVersion}"
+                       "org.scalatest:scalatest_${scalaVersion}:${scalaTestVersion}",
+                       "com.codecommit:cats-effect-testing-scalatest_${scalaVersion}:${catsEffectTestingScalaTestVersion}"
 
     // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitApiVersion}",

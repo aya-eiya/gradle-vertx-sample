@@ -13,5 +13,5 @@ case class TimeoutAccessTokenStatus(timeoutUTC: Long)
     extends AccessTokenStatus
     with AppTime {
   def exists = true
-  def expired: Boolean = timeoutUTC > currentTimeMillis
+  def expired: Boolean = timeoutUTC < currentTimeMillis
 }

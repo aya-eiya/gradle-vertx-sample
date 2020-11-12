@@ -36,47 +36,6 @@ case class EmailAuthInput(
 
 case class LoginStatusData(accessToken: String, authToken: String)
 
-private object ErrorDescriptions {
-
-  def dataNotFound: ErrorDescription =
-    ErrorDescription(
-      reason = "送信データが取得できませんでした",
-      todo = "データの送信方法が間違っている可能性があります",
-      reference = ""
-    )
-  def emailAddressNotFound: ErrorDescription =
-    ErrorDescription(
-      reason = "emailAddressが入力されていません",
-      todo = "emailAddressは必須です",
-      reference = ""
-    )
-  def passwordNotFound: ErrorDescription =
-    ErrorDescription(
-      reason = "Passwordが入力されていません",
-      todo = "Passwordは必須です",
-      reference = ""
-    )
-  def emailAddressAndPasswordNotFound: ErrorDescription =
-    ErrorDescription(
-      reason = "emailAddressとpasswordが入力されていません",
-      todo = "emailAddressとpasswordは必須です",
-      reference = ""
-    )
-  def invalidAccessToken: ErrorDescription =
-    ErrorDescription(
-      reason = "accessTokenが正しくありません",
-      todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
-      reference = ""
-    )
-  def failedToSetContext: ErrorDescription =
-    ErrorDescription(
-      reason = "情報の保存に失敗しました",
-      todo = "システムの管理者に連絡してください",
-      reference = ""
-    )
-
-}
-
 object EmailAuth {
   type ResponseData = EitherT[IO, EmailAuthNErrorStatus, LoginStatusData]
   def verticleName: String = nameForVerticle[EmailAuth]
@@ -97,6 +56,46 @@ object EmailAuth {
       |  verifyPassword(input: EmailAuthInput): Status
       |}
       |""".stripMargin
+
+  object ErrorDescriptions {
+
+    def dataNotFound: ErrorDescription =
+      ErrorDescription(
+        reason = "送信データが取得できませんでした",
+        todo = "データの送信方法が間違っている可能性があります",
+        reference = ""
+      )
+    def emailAddressNotFound: ErrorDescription =
+      ErrorDescription(
+        reason = "emailAddressが入力されていません",
+        todo = "emailAddressは必須です",
+        reference = ""
+      )
+    def passwordNotFound: ErrorDescription =
+      ErrorDescription(
+        reason = "Passwordが入力されていません",
+        todo = "Passwordは必須です",
+        reference = ""
+      )
+    def emailAddressAndPasswordNotFound: ErrorDescription =
+      ErrorDescription(
+        reason = "emailAddressとpasswordが入力されていません",
+        todo = "emailAddressとpasswordは必須です",
+        reference = ""
+      )
+    def invalidAccessToken: ErrorDescription =
+      ErrorDescription(
+        reason = "accessTokenが正しくありません",
+        todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
+        reference = ""
+      )
+    def failedToSetContext: ErrorDescription =
+      ErrorDescription(
+        reason = "情報の保存に失敗しました",
+        todo = "システムの管理者に連絡してください",
+        reference = ""
+      )
+  }
 }
 
 class EmailAuth

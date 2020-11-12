@@ -9,24 +9,32 @@ import vchat.state.models.values.AccessToken
 import vchat.utilities.email.EmailAddress
 
 object GetEmailAuth {
-  private def verifyErrorStatus: EmailAuthNErrorStatus =
-    EmailAuthNErrorStatus(
-      EmailAuthNErrorStatus.memberNotFound,
+  object ErrorDescriptions {
+    def verifyErrorDescription: ErrorDescription =
       ErrorDescription(
         reason = "EmailAddressまたはPasswordが間違っています",
         todo = "EmailAddressとPasswordの組み合わせをご確認ください",
         reference = "[Link(Page:forget/email),Link(Page:forget/password)]"
       )
-    )
 
-  private def wrongEmailAddressErrorStatus =
-    EmailAuthNErrorStatus(
-      EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
+    def wrongEmailAddressDescription: ErrorDescription =
       ErrorDescription(
         reason = "EmailAddressの形式が間違っています",
         todo = "EmailAddressの形式を確かめて再度送信してください",
         reference = "[Link(Page:help,Target:#login)]"
       )
+  }
+
+  def verifyErrorStatus: EmailAuthNErrorStatus =
+    EmailAuthNErrorStatus(
+      EmailAuthNErrorStatus.memberNotFound,
+      ErrorDescriptions.verifyErrorDescription
+    )
+
+  def wrongEmailAddressErrorStatus: EmailAuthNErrorStatus =
+    EmailAuthNErrorStatus(
+      EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
+      ErrorDescriptions.wrongEmailAddressDescription
     )
 }
 trait GetEmailAuth {
