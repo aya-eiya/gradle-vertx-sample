@@ -21,33 +21,21 @@ object InMemoryApplicationContextRepository
     OptionT(IO(data.get(accessToken)))
 
   override def create(accessToken: AccessToken): IO[Unit] =
-    IO(
-      data.put(
-        accessToken,
-        ApplicationContext(
-          Seq(
-            AccessContext(TimeoutAccessTokenStatus.create),
-            LoginContext(
-              accessToken,
-              AuthNStatus
-                .empty(accessToken)
-            )
-          )
-        )
-      )
-    )
+    for {
+      t <- IO(accessToken)
+      a = AccessContext(TimeoutAccessTokenStatus.create)
+      l = LoginContext(t, AuthNStatus.empty(t))
+      c = ApplicationContext(Seq(a, l))
+    } yield data.put(t, c)
 
   override def putContext[T <: Context: ClassTag](
       accessToken: AccessToken,
       context: T
-  ): IO[Unit] =
-    IO(
-      for {
-        d <- data.get(accessToken)
-        _ <- d.get[AccessContext]
-      } yield data.put(
-        accessToken,
-        d.put(context)
-      )
-    )
+  ): OptionT[IO, Unit] =
+    for {
+      a <- OptionT.liftF(IO(accessToken))
+      b <- contextOf(a)
+      c <- b.get[AccessContext]
+      d <- OptionT.liftF(b.putContext(context))
+    } yield data.put(a, d)
 }

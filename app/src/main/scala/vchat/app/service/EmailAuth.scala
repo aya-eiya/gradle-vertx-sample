@@ -166,13 +166,24 @@ class EmailAuth
         )
       )
       c <- verifyPassword(t, a)
-      _ <- EitherT.right(setContext(t, c))
+      _ <- setContext(t, c)
     } yield LoginStatusData(t.value, c.token.base64)
 
   private def setContext(
       token: AccessToken,
       status: EmailAuthNStatus
-  ): IO[Unit] = contextManager.setContext(token, LoginContext(token, status))
+  ): EitherT[IO, EmailAuthNErrorStatus, Unit] =
+    contextManager
+      .setContext(
+        token,
+        LoginContext(token, status)
+      )
+      .toRight(
+        EmailAuthNErrorStatus(
+          EmailAuthNErrorStatus.systemErrorCode,
+          ErrorDescriptions.failedToSetContext
+        )
+      )
 
   private def accessToken(env: DataFetchingEnvironment): IO[AccessToken] =
     getToken(env).getOrElseF(createToken)

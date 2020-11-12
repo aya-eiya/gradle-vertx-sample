@@ -33,7 +33,7 @@ trait ApplicationContextRepository {
   def putContext[T <: Context: ClassTag](
       accessToken: AccessToken,
       context: T
-  ): IO[Unit]
+  ): OptionT[IO, Unit]
 
   def resetAccessTokenTimeout(accessToken: AccessToken): OptionT[IO, Unit] =
     for {

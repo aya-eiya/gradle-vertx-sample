@@ -45,7 +45,7 @@ trait GetEmailAuth {
     for {
       _ <- verifyEmailAddress(emailAddress)
       a = emailRepo.exists(emailAddress, rawPassword)
-      _ <- EitherT.right(a).transform {
+      _ <- EitherT(a.attempt).transform {
         case Right(true) => Right(())
         case _           => Left(verifyErrorStatus)
       }

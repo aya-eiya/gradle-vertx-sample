@@ -29,7 +29,7 @@ trait UseWebApplicationContext {
       c <- getHeaderToken(context)
       t = AccessToken(c)
       v <- contextManager.getApplicationContext(t)
-      _ <- OptionT(IO(v.get[AccessContext]))
+      _ <- v.get[AccessContext]
     } yield t
 
   private def getHeaderToken(context: RoutingContext) =

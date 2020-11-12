@@ -15,16 +15,12 @@ import scala.collection.mutable.{Map => MutMap}
 object InMemoryAccessTokenRepository extends AccessTokenRepository {
   private val data = MutMap[AccessToken, AccessTokenStatus]()
 
-  override def create(): IO[AccessToken] = {
-    val token = AccessToken(s"testToken_${data.size}")
-    data.put(
-      token,
-      TimeoutAccessTokenStatus.create
-    )
-    IO(token)
-  }
+  override def create(): IO[AccessToken] =
+    for {
+      t <- IO(AccessToken(s"testToken_${data.size}"))
+      _ = data.put(t, TimeoutAccessTokenStatus.create)
+    } yield t
 
   override def verify(token: AccessToken): IO[AccessTokenStatus] =
     IO(data.getOrElse(token, AccessTokenStatus.NotExists))
-
 }
