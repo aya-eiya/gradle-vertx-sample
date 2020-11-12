@@ -8,12 +8,15 @@ import vchat.state.models.{AccessContext, ApplicationContext, Context}
 import vchat.state.models.values.{AccessToken, TimeoutAccessTokenStatus}
 import vchat.state.repositories.ApplicationContextRepository
 
-import scala.collection.mutable.{Map => MutMap}
 import scala.reflect.ClassTag
+import collection.JavaConverters._
+import scala.collection.mutable.{Map => MutMap}
+import java.util.concurrent.{ConcurrentHashMap => JCMap}
 
 object InMemoryApplicationContextRepository
     extends ApplicationContextRepository {
-  private val data = MutMap[AccessToken, ApplicationContext]()
+  private val data: MutMap[AccessToken, ApplicationContext] =
+    new JCMap[AccessToken, ApplicationContext]().asScala
 
   override def contextOf(
       accessToken: AccessToken

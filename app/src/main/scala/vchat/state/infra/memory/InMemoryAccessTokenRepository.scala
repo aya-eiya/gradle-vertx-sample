@@ -1,8 +1,7 @@
 package vchat.state.infra.memory
 
-import cats.data.OptionT
+import collection.JavaConverters._
 import cats.effect.IO
-import cats.effect.implicits._
 import vchat.state.models.values.{
   AccessToken,
   AccessTokenStatus,
@@ -11,9 +10,11 @@ import vchat.state.models.values.{
 import vchat.state.repositories.AccessTokenRepository
 
 import scala.collection.mutable.{Map => MutMap}
+import java.util.concurrent.{ConcurrentHashMap => JCMap}
 
 object InMemoryAccessTokenRepository extends AccessTokenRepository {
-  private val data = MutMap[AccessToken, AccessTokenStatus]()
+  private val data: MutMap[AccessToken, AccessTokenStatus] =
+    new JCMap[AccessToken, AccessTokenStatus]().asScala
 
   override def create(): IO[AccessToken] =
     for {
