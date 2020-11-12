@@ -8,7 +8,29 @@ import vchat.logging.ErrorDescription
 import vchat.state.models.values.AccessToken
 import vchat.utilities.email.EmailAddress
 
+object GetEmailAuth {
+  private def verifyErrorStatus: EmailAuthNErrorStatus =
+    EmailAuthNErrorStatus(
+      EmailAuthNErrorStatus.memberNotFound,
+      ErrorDescription(
+        reason = "EmailAddressまたはPasswordが間違っています",
+        todo = "EmailAddressとPasswordの組み合わせをご確認ください",
+        reference = "[Link(Page:forget/email),Link(Page:forget/password)]"
+      )
+    )
+
+  private def wrongEmailAddressErrorStatus =
+    EmailAuthNErrorStatus(
+      EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
+      ErrorDescription(
+        reason = "EmailAddressの形式が間違っています",
+        todo = "EmailAddressの形式を確かめて再度送信してください",
+        reference = "[Link(Page:help,Target:#login)]"
+      )
+    )
+}
 trait GetEmailAuth {
+  import GetEmailAuth._
   val emailRepo: MemberEmailRepository
 
   def createAuthNStatus(
@@ -22,22 +44,11 @@ trait GetEmailAuth {
   ): EitherT[IO, EmailAuthNErrorStatus, EmailAuthNStatus] =
     for {
       _ <- verifyEmailAddress(emailAddress)
-      _ <- EitherT(
-        for {
-          r <- emailRepo.exists(emailAddress, rawPassword)
-        } yield Either.cond(
-          r,
-          (),
-          EmailAuthNErrorStatus(
-            EmailAuthNErrorStatus.memberNotFound,
-            ErrorDescription(
-              reason = "EmailAddressまたはPasswordが間違っています",
-              todo = "EmailAddressとPasswordの組み合わせをご確認ください",
-              reference = "[Link(Page:forget/email),Link(Page:forget/password)]"
-            )
-          )
-        )
-      )
+      a = emailRepo.exists(emailAddress, rawPassword)
+      _ <- EitherT.right(a).transform {
+        case Right(true) => Right(())
+        case _           => Left(verifyErrorStatus)
+      }
       c <- EitherT.right(createAuthNStatus(accessToken))
     } yield c
 
@@ -47,13 +58,6 @@ trait GetEmailAuth {
     EitherT.cond(
       EmailAddress.isValid(emailAddress.value),
       Unit,
-      EmailAuthNErrorStatus(
-        EmailAuthNErrorStatus.wrongEmailAddressErrorCode,
-        ErrorDescription(
-          reason = "EmailAddressの形式が間違っています",
-          todo = "EmailAddressの形式を確かめて再度送信してください",
-          reference = "[Link(Page:help,Target:#login)]"
-        )
-      )
+      wrongEmailAddressErrorStatus
     )
 }
