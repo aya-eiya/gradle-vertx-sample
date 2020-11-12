@@ -11,6 +11,7 @@ import io.vertx.ext.web.handler.graphql.{
 import io.vertx.scala.ext.web.RoutingContext
 import io.vertx.ext.web.{RoutingContext => JRoutingContext}
 import org.dataloader.DataLoaderRegistry
+import scala.language.implicitConversions
 
 object GraphQLHandler {
   type ContextFactory = RoutingContext => AnyRef

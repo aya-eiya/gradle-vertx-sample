@@ -20,8 +20,7 @@ class InMemoryApplicationContextRepositoryTest
     val key0 = AccessToken("unitTestToken_0")
     it("初期状態でデータが所得できないこと") {
       repo.contextOf(key0).value.asserting {
-        case Some(_) => fail("data must be empty")
-        case None    => assert(true)
+        _ shouldBe None
       }
     }
     describe("キーを一つ登録する場合について") {
