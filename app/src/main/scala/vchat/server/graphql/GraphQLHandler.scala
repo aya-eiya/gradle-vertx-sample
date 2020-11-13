@@ -1,16 +1,17 @@
-package vchat.app.service.base
+package vchat.server.graphql
 
 import java.util.{Locale, function}
 
-import graphql.GraphQL
+import _root_.graphql.GraphQL
 import io.vertx.core.Handler
 import io.vertx.ext.web.handler.graphql.{
   GraphQLHandlerOptions,
   GraphQLHandler => JGraphQLHandler
 }
-import io.vertx.scala.ext.web.RoutingContext
 import io.vertx.ext.web.{RoutingContext => JRoutingContext}
+import io.vertx.scala.ext.web.RoutingContext
 import org.dataloader.DataLoaderRegistry
+
 import scala.language.implicitConversions
 
 object GraphQLHandler {
@@ -21,7 +22,7 @@ object GraphQLHandler {
   type JDataLoaderFactory = Function[JRoutingContext, DataLoaderRegistry]
   type JLocaleFactory = Function[JRoutingContext, Locale]
 
-  private[base] implicit def javaHandler2ScalaHandler(
+  implicit def javaHandler2ScalaHandler(
       handler: JGraphQLHandler
   ): GraphQLHandler = new GraphQLHandler(handler)
   implicit def jRoutingContext2RoutingContext(
@@ -33,18 +34,19 @@ object GraphQLHandler {
     JGraphQLHandler.create(graphQL, options)
 }
 
-private[base] trait JGraphQLHandlerMethods {
+trait JGraphQLHandlerMethods {
   val innerHandler: JGraphQLHandler
-  private[base] def innerQueryContext(
+  def innerQueryContext(
       factory: function.Function[JRoutingContext, AnyRef]
   ): JGraphQLHandler = innerHandler.queryContext(factory)
-  private[base] def innerDataLoaderRegistry(
+  def innerDataLoaderRegistry(
       factory: function.Function[JRoutingContext, DataLoaderRegistry]
   ): JGraphQLHandler = innerHandler.dataLoaderRegistry(factory)
-  private[base] def innerLocale(
+  def innerLocale(
       factory: function.Function[JRoutingContext, Locale]
   ): JGraphQLHandler = innerHandler.locale(factory)
 }
+
 class GraphQLHandler(val innerHandler: JGraphQLHandler)
     extends Handler[RoutingContext]
     with JGraphQLHandlerMethods {

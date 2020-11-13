@@ -1,5 +1,6 @@
 package vchat.auth.infra.memory
 
+import cats.data.OptionT
 import cats.effect.IO
 import vchat.auth.domain.models.values.email.{
   AuthEmailAddress,
@@ -19,11 +20,16 @@ trait InMemoryMemberEmailRepositoryImpl extends MemberEmailRepository {
   override def exists(
       emailAddress: AuthEmailAddress,
       rawPassword: String
-  ): IO[Boolean] =
-    IO(
-      data
-        .get(emailAddress)
-        .exists(_.check(rawPassword))
+  ): OptionT[IO, Boolean] =
+    OptionT(
+      IO(
+        if (
+          data
+            .get(emailAddress)
+            .exists(_.check(rawPassword))
+        ) Some(true)
+        else None
+      )
     )
 }
 

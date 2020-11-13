@@ -1,7 +1,9 @@
 package vchat.app
 
 import io.vertx.scala.core.Vertx
-import vchat.app.service._
+import vchat.app.service.auth.EmailAuth
+import vchat.app.service.message.Message
+import vchat.app.service.user.User
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}

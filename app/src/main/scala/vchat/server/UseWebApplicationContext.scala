@@ -1,8 +1,8 @@
-package vchat.app.service.base
+package vchat.server
 
+import _root_.graphql.schema.DataFetchingEnvironment
 import cats.data.OptionT
 import cats.effect.IO
-import graphql.schema.DataFetchingEnvironment
 import io.vertx.scala.ext.web.RoutingContext
 import vchat.state.api.ApplicationContextManager
 import vchat.state.models.AccessContext

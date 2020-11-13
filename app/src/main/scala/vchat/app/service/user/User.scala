@@ -1,7 +1,8 @@
-package vchat.app.service
+package vchat.app.service.user
+
 import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
 import io.vertx.scala.core.http.{HttpServerRequest, HttpServerResponse}
-import vchat.app.service.base.{RESTMixIn, Service}
+import vchat.server.{RESTMixIn, Service}
 
 object User {
   def verticleName: String = nameForVerticle[User]

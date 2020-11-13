@@ -1,6 +1,6 @@
-package vchat.app.service.base
+package vchat.server
 
-import graphql.GraphQL
+import _root_.graphql.GraphQL
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod._
 import io.vertx.lang.scala.ScalaVerticle
@@ -8,6 +8,8 @@ import io.vertx.scala.core.http.{HttpServerRequest, HttpServerResponse}
 import io.vertx.scala.ext.web.handler.LoggerHandler
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import vchat.app.env.AppEnv
+import vchat.server.graphql.GraphQLHandler
+
 import scala.concurrent.Future
 
 trait RESTMixIn extends ScalaVerticle {

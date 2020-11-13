@@ -3,6 +3,9 @@ package vchat.app.env
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod._
 import vchat.app.service._
+import vchat.app.service.auth.EmailAuth
+import vchat.app.service.message.Message
+import vchat.app.service.user.User
 
 private[env] object AppEnv {
   type Allowed = Set[HttpMethod]

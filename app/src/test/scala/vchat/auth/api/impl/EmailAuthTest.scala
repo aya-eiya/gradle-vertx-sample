@@ -21,7 +21,7 @@ class EmailAuthTest extends AsyncFunSpec with AsyncIOSpec with Matchers {
     describe("メールアドレスが形式として正しい場合") {
       describe("パスワードが正しい場合") {
         val result =
-          EmailAuth(AuthEmailAddress("test@test.jp"), "rightPassword")
+          EmailAuthTestTask(AuthEmailAddress("test@test.jp"), "rightPassword")
             .tryAuth()
         it("AuthNが認証済みになる") {
           result.value.asserting {
@@ -56,11 +56,11 @@ class EmailAuthTest extends AsyncFunSpec with AsyncIOSpec with Matchers {
       }
       describe("パスワードが正しくない場合") {
         val result =
-          EmailAuth(AuthEmailAddress("test@test.jp"), "wrongPassword")
+          EmailAuthTestTask(AuthEmailAddress("test@test.jp"), "wrongPassword")
             .tryAuth()
         it("AuthNから認証に失敗したメッセージが取得できる") {
           result.value.asserting {
-            case Right(_) => fail("should not login")
+            case Right(status) => fail(s"should not login: $status")
             case Left(err) =>
               err.code shouldBe EmailAuthNErrorStatus.memberNotFound
               err.description shouldBe GetEmailAuth.ErrorDescriptions.verifyErrorDescription
@@ -74,8 +74,9 @@ class EmailAuthTest extends AsyncFunSpec with AsyncIOSpec with Matchers {
       }
     }
     describe("メールアドレスが形式として間違っている場合") {
-      val result = EmailAuth(AuthEmailAddress("test_test.jp"), "rightPassword")
-        .tryAuth()
+      val result =
+        EmailAuthTestTask(AuthEmailAddress("test_test.jp"), "rightPassword")
+          .tryAuth()
       it("MailAuthからメールアドレス形式違反メッセージを取得できる") {
         result.value.asserting {
           case Right(_) => fail("should not login")

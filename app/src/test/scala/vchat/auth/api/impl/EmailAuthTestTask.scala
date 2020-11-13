@@ -2,7 +2,6 @@ package vchat.auth.api.impl
 
 import cats.data.EitherT
 import cats.effect.IO
-import vchat.app.service.base.UseWebApplicationContext
 import vchat.auth.api.EmailAuthorizer
 import vchat.auth.domain.models.{AuthN, LoginContext}
 import vchat.auth.domain.models.values.email.{
@@ -11,10 +10,11 @@ import vchat.auth.domain.models.values.email.{
   EmailAuthNStatus
 }
 import vchat.logging.ErrorDescription
+import vchat.server.UseWebApplicationContext
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
 
-case class EmailAuth(
+case class EmailAuthTestTask(
     emailAddress: AuthEmailAddress,
     rawPassword: String
 ) extends AuthN
