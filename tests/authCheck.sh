@@ -8,8 +8,7 @@ function accessToken {
     -H "Content-Type: application/json" \
     -H "Access-Token: $accessToken" \
     -d '{ "query": "query { accessToken }"}' \
-    $endpoint \
-  | jq -r '.data.accessToken'
+    $endpoint
 }
 
 function verifyPassword {
@@ -21,6 +20,6 @@ function verifyPassword {
   $endpoint
 }
 
-accessToken=`accessToken $1`
-verifyPassword $accessToken
+token=`accessToken $1 | jq -r '.data.accessToken'`
+verifyPassword $token
 

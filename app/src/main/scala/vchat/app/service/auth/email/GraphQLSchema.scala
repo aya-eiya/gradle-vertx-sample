@@ -45,8 +45,8 @@ trait GraphQLSchema {
       |}
       |
       |type Query {
-      |  accessToken: String
-      |  verifyPassword(input: EmailAuthInput): Status
+      |  accessToken: String!
+      |  verifyPassword(input: EmailAuthInput): Status!
       |}
       |""".stripMargin
 

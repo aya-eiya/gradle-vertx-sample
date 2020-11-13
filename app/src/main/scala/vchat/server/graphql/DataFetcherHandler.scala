@@ -12,9 +12,9 @@ trait DataFetcherHandler[T] {
   def build: VertxDataFetcher[T] =
     new VertxDataFetcher[T]((env, p) => {
       handler(env, p)
-        .unsafeRunAsync {
-          case Right(value)    => println(value)
-          case Left(throwable) => println(throwable)
-        }
+        .unsafeRunSync() match {
+        case Right(value)    => println(s"success:$value")
+        case Left(throwable) => println(throwable)
+      }
     })
 }

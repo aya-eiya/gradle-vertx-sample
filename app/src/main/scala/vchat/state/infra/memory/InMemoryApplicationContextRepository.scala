@@ -34,11 +34,9 @@ object InMemoryApplicationContextRepository
   override def putContext[T <: Context: ClassTag](
       accessToken: AccessToken,
       context: T
-  ): OptionT[IO, Unit] = {
-    println(s"context.put(): $accessToken")
+  ): OptionT[IO, Unit] =
     for {
       b <- contextOf(accessToken)
       d <- OptionT.liftF(b.putContext(context))
     } yield data.put(accessToken, d)
-  }
 }

@@ -1,5 +1,6 @@
 package vchat.app.service.auth.email
 
+import cats.data.EitherT
 import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
 import io.vertx.core.Promise
@@ -13,5 +14,9 @@ case class AccessTokenDataFetcher(
   override protected def handler(
       env: DataFetchingEnvironment,
       p: Promise[String]
-  ): IO[_] = getAvailableAccessToken(env)
+  ): IO[Either[Unit, Unit]] =
+    EitherT(getAvailableAccessToken(env).attempt).transform {
+      case Right(token) => Right(p.complete(token.value))
+      case Left(err)    => Left(p.fail(err.toString))
+    }.value
 }

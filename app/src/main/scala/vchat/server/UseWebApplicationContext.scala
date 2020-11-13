@@ -27,8 +27,11 @@ trait UseWebApplicationContext {
   ): OptionT[IO, AccessToken] =
     for {
       c <- getHeaderToken(context)
+      _ = println(s"a-c:$c")
       t = AccessToken(c)
+      _ = println(s"a-t:$t")
       v <- contextManager.getApplicationContext(t)
+      _ = println(s"a-v:$v")
       _ <- v.get[AccessContext]
     } yield t
 
@@ -38,7 +41,10 @@ trait UseWebApplicationContext {
         context
           .request()
           .headers()
-          .get(accessTokenHeaderName)
+          .get(accessTokenHeaderName) match {
+          case None | Some(null) => None
+          case Some(token)       => Some(token)
+        }
       )
     )
 }

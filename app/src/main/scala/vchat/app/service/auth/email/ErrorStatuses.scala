@@ -8,22 +8,22 @@ trait ErrorStatuses extends ErrorDescriptions {
       EmailAuthNErrorStatus.memberNotFound,
       emailAddressNotFound
     )
-  def passwordNotFoundStatus =
+  def passwordNotFoundStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
       EmailAuthNErrorStatus.memberNotFound,
       passwordNotFound
     )
-  def emailAddressAndPasswordNotFoundStatus =
+  def emailAddressAndPasswordNotFoundStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
       EmailAuthNErrorStatus.memberNotFound,
       emailAddressAndPasswordNotFound
     )
-  def invalidAccessTokenStatus =
+  def invalidAccessTokenStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
       EmailAuthNErrorStatus.invalidAccessTokenErrorCode,
       emailAddressAndPasswordNotFound
     )
-  def failedToSetContextStatus =
+  def failedToSetContextStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
       EmailAuthNErrorStatus.systemErrorCode,
       failedToSetContext

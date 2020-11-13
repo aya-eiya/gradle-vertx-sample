@@ -23,6 +23,7 @@ import vchat.auth.domain.models.values.email.{
   EmailAuthNErrorStatus,
   EmailAuthNStatus
 }
+import vchat.server.graphql.DataFetcherHandler
 import vchat.server.{GraphQLMixIn, Service, UseGraphQLApplicationContext}
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
@@ -40,11 +41,12 @@ class EmailAuth
   import email.GraphQLSchema._
 
   def authorizer: EmailAuthorizer = StaticEmailAuthorizer
-  val verifyPasswordDataFetcher: VerifyPasswordDataFetcher =
+  def verifyPasswordDataFetcher: DataFetcherHandler[LoginStatusData] =
     VerifyPasswordDataFetcher(login)
-  val accessTokenDataFetcher: AccessTokenDataFetcher = AccessTokenDataFetcher(
-    getAvailableAccessToken
-  )
+  def accessTokenDataFetcher: DataFetcherHandler[String] =
+    AccessTokenDataFetcher(
+      getAvailableAccessToken
+    )
 
   override def contextManager: ApplicationContextManager =
     StaticApplicationContextManager
@@ -68,7 +70,7 @@ class EmailAuth
             )
       )
       .build
-    GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build()
+    GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build
   }
 
   def getAvailableAccessToken(
