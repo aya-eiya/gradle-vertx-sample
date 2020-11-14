@@ -5,7 +5,7 @@ import cats.effect.IO
 import vchat.auth.domain.models.LoginContext
 import vchat.auth.domain.models.values.AuthNStatus
 import vchat.state.models.{AccessContext, ApplicationContext, Context}
-import vchat.state.models.values.{AccessToken, TimeoutAccessTokenStatus}
+import vchat.state.models.values.{SessionID, TimeoutSessionIDStatus}
 import vchat.state.repositories.ApplicationContextRepository
 
 import scala.reflect.ClassTag
@@ -15,28 +15,28 @@ import java.util.concurrent.{ConcurrentHashMap => JCMap}
 
 object InMemoryApplicationContextRepository
     extends ApplicationContextRepository {
-  private val data: MutMap[AccessToken, ApplicationContext] =
-    new JCMap[AccessToken, ApplicationContext]().asScala
+  private val data: MutMap[SessionID, ApplicationContext] =
+    new JCMap[SessionID, ApplicationContext]().asScala
 
   override def contextOf(
-      accessToken: AccessToken
+      sessionID: SessionID
   ): OptionT[IO, ApplicationContext] =
-    OptionT(IO(data.get(accessToken)))
+    OptionT(IO(data.get(sessionID)))
 
-  override def create(accessToken: AccessToken): IO[Unit] =
+  override def create(sessionID: SessionID): IO[Unit] =
     for {
-      t <- IO(accessToken)
-      a = AccessContext(TimeoutAccessTokenStatus.create)
+      t <- IO(sessionID)
+      a = AccessContext(TimeoutSessionIDStatus.create)
       l = LoginContext(t, AuthNStatus.empty(t))
       c = ApplicationContext(Seq(a, l))
     } yield data.put(t, c)
 
   override def putContext[T <: Context: ClassTag](
-      accessToken: AccessToken,
+      sessionID: SessionID,
       context: T
   ): OptionT[IO, Unit] =
     for {
-      b <- contextOf(accessToken)
+      b <- contextOf(sessionID)
       d <- OptionT.liftF(b.putContext(context))
-    } yield data.put(accessToken, d)
+    } yield data.put(sessionID, d)
 }

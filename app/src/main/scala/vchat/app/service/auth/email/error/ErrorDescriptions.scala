@@ -1,4 +1,4 @@
-package vchat.app.service.auth.email
+package vchat.app.service.auth.email.error
 
 import vchat.logging.ErrorDescription
 
@@ -27,9 +27,9 @@ private[email] trait ErrorDescriptions {
       todo = "emailAddressとpasswordは必須です",
       reference = ""
     )
-  private[email] def invalidAccessToken: ErrorDescription =
+  private[email] def invalidSessionID: ErrorDescription =
     ErrorDescription(
-      reason = "accessTokenが正しくありません",
+      reason = "sessionIDが正しくありません",
       todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
       reference = ""
     )

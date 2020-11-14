@@ -3,7 +3,7 @@ package vchat.app.service.auth.email
 import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
 import io.vertx.core.Promise
-import vchat.app.service.auth.email.GraphQLSchema.LoginStatusData
+import vchat.app.service.auth.email.schema.GraphQLSchema.LoginStatusData
 import vchat.server.graphql.DataFetcherHandler
 import cats.data.EitherT
 import vchat.auth.domain.models.values.email.EmailAuthNErrorStatus

@@ -12,10 +12,9 @@ import graphql.schema.idl.{
   TypeRuntimeWiring
 }
 import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
-import vchat.app.service.auth.email.{
-  AccessTokenDataFetcher,
-  VerifyPasswordDataFetcher
-}
+import vchat.app.service.auth.email.VerifyPasswordDataFetcher
+import vchat.app.service.auth.email.error.ErrorStatuses
+import vchat.app.service.auth.email.schema.GraphQLSchema
 import vchat.auth.api.EmailAuthorizer
 import vchat.auth.api.impl.StaticEmailAuthorizer
 import vchat.auth.domain.models.LoginContext
@@ -24,12 +23,13 @@ import vchat.auth.domain.models.values.email.{
   EmailAuthNStatus
 }
 import vchat.server.graphql.DataFetcherHandler
+import vchat.server.graphql.state.SessionIDDataFetcher
 import vchat.server.{GraphQLMixIn, Service, UseGraphQLApplicationContext}
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
-import vchat.state.models.values.AccessToken
+import vchat.state.models.values.SessionID
 
-object EmailAuth extends email.GraphQLSchema with email.ErrorStatuses {
+object EmailAuth extends GraphQLSchema with ErrorStatuses {
   def verticleName: String = nameForVerticle[EmailAuth]
 }
 
@@ -38,14 +38,14 @@ class EmailAuth
     with GraphQLMixIn
     with UseGraphQLApplicationContext {
   import EmailAuth._
-  import email.GraphQLSchema._
+  import email.schema.GraphQLSchema._
 
   def authorizer: EmailAuthorizer = StaticEmailAuthorizer
   def verifyPasswordDataFetcher: DataFetcherHandler[LoginStatusData] =
     VerifyPasswordDataFetcher(login)
-  def accessTokenDataFetcher: DataFetcherHandler[String] =
-    AccessTokenDataFetcher(
-      getAvailableAccessToken
+  def sessionIDDataFetcher: DataFetcherHandler[String] =
+    SessionIDDataFetcher(
+      getAvailableSessionID
     )
 
   override def contextManager: ApplicationContextManager =
@@ -65,17 +65,17 @@ class EmailAuth
               verifyPasswordDataFetcher.build
             )
             .dataFetcher(
-              "accessToken",
-              accessTokenDataFetcher.build
+              "sessionID",
+              sessionIDDataFetcher.build
             )
       )
       .build
     GraphQL.newGraphQL(gen.makeExecutableSchema(reg, wiring)).build
   }
 
-  def getAvailableAccessToken(
+  def getAvailableSessionID(
       env: DataFetchingEnvironment
-  ): IO[AccessToken] =
+  ): IO[SessionID] =
     getToken(env).getOrElseF(createToken)
 
   private def login(
@@ -84,23 +84,23 @@ class EmailAuth
     for {
       d <- getInputValues(env)
       a <- verifyInput(d)
-      t <- getToken(env).toRight(invalidAccessTokenStatus)
+      t <- getToken(env).toRight(invalidSessionIDStatus)
       c <- verifyPassword(t, a)
       _ <- setContext(t, c)
     } yield LoginStatusData(t.value, c.token.base64)
 
   private def verifyPassword(
-      accessToken: AccessToken,
+      sessionID: SessionID,
       input: EmailAuthInput
   ): EitherT[IO, EmailAuthNErrorStatus, EmailAuthNStatus] =
     authorizer.verifyPassword(
-      accessToken,
+      sessionID,
       input.emailAddress,
       input.rawPassword
     )
 
   private def setContext(
-      token: AccessToken,
+      token: SessionID,
       status: EmailAuthNStatus
   ): EitherT[IO, EmailAuthNErrorStatus, Unit] =
     contextManager

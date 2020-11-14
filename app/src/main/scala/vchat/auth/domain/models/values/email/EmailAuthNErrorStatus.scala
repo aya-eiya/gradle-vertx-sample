@@ -14,7 +14,7 @@ object EmailAuthNErrorStatus {
     AuthNErrorCode(code = 100001, message = "Wrong email address")
   val memberNotFound: AuthNErrorCode =
     AuthNErrorCode(code = 100002, message = "Member not found")
-  val invalidAccessTokenErrorCode: AuthNErrorCode =
+  val invalidSessionIDErrorCode: AuthNErrorCode =
     AuthNErrorCode(code = 100003, message = "Invalid access token")
   val systemErrorCode: AuthNErrorCode =
     AuthNErrorCode(code = 100000, message = "System error in email auth")

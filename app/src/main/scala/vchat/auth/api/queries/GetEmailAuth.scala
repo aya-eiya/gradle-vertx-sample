@@ -5,7 +5,7 @@ import cats.effect.IO
 import vchat.auth.domain.models.values.email._
 import vchat.auth.domain.repositories.MemberEmailRepository
 import vchat.logging.ErrorDescription
-import vchat.state.models.values.AccessToken
+import vchat.state.models.values.SessionID
 import vchat.utilities.email.EmailAddress
 
 object GetEmailAuth {
@@ -42,11 +42,11 @@ trait GetEmailAuth {
   val emailRepo: MemberEmailRepository
 
   def createAuthNStatus(
-      accessToken: AccessToken
+      sessionID: SessionID
   ): IO[EmailAuthNStatus]
 
   def verifyPassword(
-      accessToken: AccessToken,
+      sessionID: SessionID,
       emailAddress: AuthEmailAddress,
       rawPassword: String
   ): EitherT[IO, EmailAuthNErrorStatus, EmailAuthNStatus] =
@@ -54,7 +54,7 @@ trait GetEmailAuth {
       _ <- verifyEmailAddress(emailAddress)
       a = emailRepo.exists(emailAddress, rawPassword)
       _ <- a.toRight(verifyErrorStatus)
-      c <- EitherT.right(createAuthNStatus(accessToken))
+      c <- EitherT.right(createAuthNStatus(sessionID))
     } yield c
 
   private def verifyEmailAddress(

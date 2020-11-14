@@ -2,15 +2,15 @@ package vchat.state.models.values
 
 import vchat.utilities.time.AppTime
 
-object TimeoutAccessTokenStatus extends AppTime {
-  def create: TimeoutAccessTokenStatus =
-    TimeoutAccessTokenStatus(
+object TimeoutSessionIDStatus extends AppTime {
+  def create: TimeoutSessionIDStatus =
+    TimeoutSessionIDStatus(
       currentTimeMillis + defaultTokenTimeout
     )
 }
 
-case class TimeoutAccessTokenStatus(timeoutUTC: Long)
-    extends AccessTokenStatus
+case class TimeoutSessionIDStatus(timeoutUTC: Long)
+    extends SessionIDStatus
     with AppTime {
   def exists = true
   def expired: Boolean = timeoutUTC < currentTimeMillis

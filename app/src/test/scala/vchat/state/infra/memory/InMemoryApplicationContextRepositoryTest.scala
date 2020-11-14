@@ -8,7 +8,7 @@ import vchat.auth.domain.models.LoginContext
 import vchat.auth.domain.models.values.AuthToken
 import vchat.auth.domain.models.values.email.EmailAuthNStatus
 import vchat.state.models.AccessContext
-import vchat.state.models.values.AccessToken
+import vchat.state.models.values.SessionID
 
 class InMemoryApplicationContextRepositoryTest
     extends AsyncFunSpec
@@ -17,7 +17,7 @@ class InMemoryApplicationContextRepositoryTest
   describe("インメモリマップを使用したApplicationContextの実装") {
     val repo = InMemoryApplicationContextRepository
 
-    val key0 = AccessToken("unitTestToken_0")
+    val key0 = SessionID("unitTestToken_0")
     it("初期状態でデータが所得できないこと") {
       repo.contextOf(key0).value.asserting {
         _ shouldBe None
@@ -32,7 +32,7 @@ class InMemoryApplicationContextRepositoryTest
           loginContext <- c.get[LoginContext]
           test = () => {
             assert(accessContext.status.existsAndNotExpired)
-            loginContext.accessToken shouldBe key0
+            loginContext.sessionID shouldBe key0
             assert(!loginContext.authNStatus.isAuthed)
           }
         } yield test
@@ -61,7 +61,7 @@ class InMemoryApplicationContextRepositoryTest
       }
     }
     describe("2つ目のキーを登録する場合について") {
-      val key1 = AccessToken("unitTestToken_1")
+      val key1 = SessionID("unitTestToken_1")
       it("createを実行したあと2つ目のキーで初期化されたコンテキストが取得できること") {
         val f = for {
           _ <- OptionT.liftF(repo.create(key1))
@@ -70,7 +70,7 @@ class InMemoryApplicationContextRepositoryTest
           loginContext <- c.get[LoginContext]
           test = () => {
             assert(accessContext.status.existsAndNotExpired)
-            loginContext.accessToken shouldBe key1
+            loginContext.sessionID shouldBe key1
             assert(!loginContext.authNStatus.isAuthed)
           }
         } yield test

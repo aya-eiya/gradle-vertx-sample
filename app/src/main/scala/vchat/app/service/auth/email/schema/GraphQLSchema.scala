@@ -1,4 +1,4 @@
-package vchat.app.service.auth.email
+package vchat.app.service.auth.email.schema
 
 import cats.data.EitherT
 import cats.effect.IO
@@ -25,7 +25,7 @@ object GraphQLSchema {
     def emailAddress: AuthEmailAddress = AuthEmailAddress(rawEmailAddress)
   }
 
-  case class LoginStatusData(accessToken: String, authToken: String)
+  case class LoginStatusData(sessionID: String, authToken: String)
 
 }
 
@@ -35,7 +35,7 @@ trait GraphQLSchema {
   def schema: String =
     """
       |type Status {
-      |  accessToken: String!
+      |  sessionID: String!
       |  authToken: String
       |}
       |
@@ -45,7 +45,7 @@ trait GraphQLSchema {
       |}
       |
       |type Query {
-      |  accessToken: String!
+      |  sessionID: String!
       |  verifyPassword(input: EmailAuthInput): Status!
       |}
       |""".stripMargin

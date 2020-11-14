@@ -1,6 +1,6 @@
 package vchat.auth.domain.models.values
 
-import vchat.state.models.values.AccessToken
+import vchat.state.models.values.SessionID
 
 /**
   * 認証状態を示す
@@ -18,6 +18,6 @@ object AuthNStatus {
     override val retryTimes: Int = 0
     override val maxRetryTime: Int = Int.MaxValue
   }
-  def empty(token: AccessToken): AuthNStatus =
+  def empty(token: SessionID): AuthNStatus =
     EmptyAuthNStatus(AuthToken(token))
 }

@@ -1,4 +1,4 @@
-package vchat.app.service.auth.email
+package vchat.app.service.auth.email.error
 
 import vchat.auth.domain.models.values.email.EmailAuthNErrorStatus
 
@@ -18,9 +18,9 @@ trait ErrorStatuses extends ErrorDescriptions {
       EmailAuthNErrorStatus.memberNotFound,
       emailAddressAndPasswordNotFound
     )
-  def invalidAccessTokenStatus: EmailAuthNErrorStatus =
+  def invalidSessionIDStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
-      EmailAuthNErrorStatus.invalidAccessTokenErrorCode,
+      EmailAuthNErrorStatus.invalidSessionIDErrorCode,
       emailAddressAndPasswordNotFound
     )
   def failedToSetContextStatus: EmailAuthNErrorStatus =
