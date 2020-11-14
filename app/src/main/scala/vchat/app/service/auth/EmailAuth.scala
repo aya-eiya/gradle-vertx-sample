@@ -22,6 +22,7 @@ import vchat.auth.domain.models.values.email.{
   EmailAuthNErrorStatus,
   EmailAuthNStatus
 }
+import vchat.logging.AsyncLogger
 import vchat.server.graphql.DataFetcherHandler
 import vchat.server.graphql.state.SessionIDDataFetcher
 import vchat.server.{GraphQLMixIn, Service, UseGraphQLApplicationContext}
@@ -36,7 +37,8 @@ object EmailAuth extends GraphQLSchema with ErrorStatuses {
 class EmailAuth
     extends Service
     with GraphQLMixIn
-    with UseGraphQLApplicationContext {
+    with UseGraphQLApplicationContext
+    with AsyncLogger {
   import EmailAuth._
   import email.schema.GraphQLSchema._
 
@@ -76,7 +78,7 @@ class EmailAuth
   def getAvailableSessionID(
       env: DataFetchingEnvironment
   ): IO[SessionID] =
-    getToken(env).getOrElseF(createToken)
+    getSessionID(env).getOrElseF(createSessionId)
 
   private def login(
       env: DataFetchingEnvironment
@@ -84,7 +86,7 @@ class EmailAuth
     for {
       d <- getInputValues(env)
       a <- verifyInput(d)
-      t <- getToken(env).toRight(invalidSessionIDStatus)
+      t <- getSessionID(env).toRight(invalidSessionIDStatus)
       c <- verifyPassword(t, a)
       _ <- setContext(t, c)
     } yield LoginStatusData(t.value, c.token.base64)

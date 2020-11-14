@@ -16,13 +16,13 @@ trait UseWebApplicationContext {
   import UseWebApplicationContext._
   def contextManager: ApplicationContextManager
 
-  def createToken: IO[SessionID] =
+  def createSessionId: IO[SessionID] =
     for {
       newToken <- contextManager.createSessionID
       _ <- contextManager.createApplicationContext(newToken)
     } yield newToken
 
-  def getToken(
+  def getSessionID(
       context: RoutingContext
   ): OptionT[IO, SessionID] =
     for {
@@ -50,7 +50,7 @@ trait UseWebApplicationContext {
 }
 
 trait UseGraphQLApplicationContext extends UseWebApplicationContext {
-  def getToken(
+  def getSessionID(
       env: DataFetchingEnvironment
-  ): OptionT[IO, SessionID] = getToken(env.getContext[RoutingContext])
+  ): OptionT[IO, SessionID] = getSessionID(env.getContext[RoutingContext])
 }

@@ -32,7 +32,7 @@ trait GraphQLMixIn extends ScalaVerticle {
 
 abstract class Service extends ScalaVerticle with AppEnv {
 
-  def logger: LoggerHandler = LoggerHandler.create()
+  def loggerHandler: LoggerHandler = LoggerHandler.create()
 
   def handler: Handler[RoutingContext]
 
@@ -51,7 +51,7 @@ abstract class Service extends ScalaVerticle with AppEnv {
         case TRACE   => router.trace
         case _       => router.get
       }
-      .foreach(_.handler(logger).handler(handler))
+      .foreach(_.handler(loggerHandler).handler(handler))
 
     vertx
       .createHttpServer()

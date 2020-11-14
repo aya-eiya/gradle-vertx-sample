@@ -9,7 +9,7 @@ import vchat.auth.domain.models.values.email.{
   EmailAuthNErrorStatus,
   EmailAuthNStatus
 }
-import vchat.logging.ErrorDescription
+import vchat.logging.models.ErrorDescription
 import vchat.server.UseWebApplicationContext
 import vchat.state.api.ApplicationContextManager
 import vchat.state.api.impl.StaticApplicationContextManager
@@ -33,7 +33,7 @@ case class EmailAuthTestTask(
   override def tryAuth()
       : EitherT[IO, EmailAuthNErrorStatus, EmailAuthNStatus] = {
     for {
-      token <- EitherT.right(createToken)
+      token <- EitherT.right(createSessionId)
       s <- authorizer.verifyPassword(token, emailAddress, rawPassword)
       _ <-
         contextManager

@@ -4,7 +4,7 @@ import cats.data.EitherT
 import cats.effect.IO
 import vchat.auth.domain.models.values.email._
 import vchat.auth.domain.repositories.MemberEmailRepository
-import vchat.logging.ErrorDescription
+import vchat.logging.models.ErrorDescription
 import vchat.state.models.values.SessionID
 import vchat.utilities.email.EmailAddress
 

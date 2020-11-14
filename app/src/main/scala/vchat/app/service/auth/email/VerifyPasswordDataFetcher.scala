@@ -19,10 +19,7 @@ case class VerifyPasswordDataFetcher(
   def handler(
       env: DataFetchingEnvironment,
       p: Promise[LoginStatusData]
-  ): IO[Either[Unit, Unit]] =
-    login(env).transform {
-      case Right(status) => Right(p.complete(status))
-      case Left(err)     => Left(p.fail(err.toString))
-    }.value
+  ): EitherT[IO, EmailAuthNErrorStatus, LoginStatusData] =
+    login(env)
 
 }

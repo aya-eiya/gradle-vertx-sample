@@ -1,4 +1,4 @@
-package vchat.logging
+package vchat.logging.models
 
 case class ErrorDescription(
     reason: String,

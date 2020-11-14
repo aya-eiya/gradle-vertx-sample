@@ -1,7 +1,7 @@
 package vchat.auth.domain.models.values.email
 
 import vchat.auth.domain.models.values._
-import vchat.logging.ErrorDescription
+import vchat.logging.models.ErrorDescription
 
 case class EmailAuthNErrorStatus(
     override val code: AuthNErrorCode,

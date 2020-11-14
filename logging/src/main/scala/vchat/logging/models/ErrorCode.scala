@@ -1,4 +1,4 @@
-package vchat.logging
+package vchat.logging.models
 
 trait ErrorCode {
   val errorType: String

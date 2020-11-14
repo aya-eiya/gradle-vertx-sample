@@ -4,7 +4,9 @@ import cats.data.EitherT
 import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
 import io.vertx.core.Promise
+import vchat.logging.models.ErrorStatus
 import vchat.server.graphql.DataFetcherHandler
+import vchat.server.graphql.error.{ErrorDescriptions, GraphQLHandleErrorStatus}
 import vchat.state.models.values.SessionID
 
 case class SessionIDDataFetcher(
@@ -14,9 +16,13 @@ case class SessionIDDataFetcher(
   override protected def handler(
       env: DataFetchingEnvironment,
       p: Promise[String]
-  ): IO[Either[Unit, Unit]] =
-    EitherT(getAvailableSessionID(env).attempt).transform {
-      case Right(token) => Right(p.complete(token.value))
-      case Left(err)    => Left(p.fail(err.toString))
-    }.value
+  ): EitherT[IO, ErrorStatus, String] =
+    EitherT(getAvailableSessionID(env).attempt)
+      .map(_.value)
+      .leftMap(_ =>
+        GraphQLHandleErrorStatus(
+          GraphQLHandleErrorStatus.graphQLError,
+          ErrorDescriptions.genericError
+        )
+      )
 }

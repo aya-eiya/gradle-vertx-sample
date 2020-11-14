@@ -1,6 +1,6 @@
 package vchat.app.service.auth.email.error
 
-import vchat.logging.ErrorDescription
+import vchat.logging.models.ErrorDescription
 
 private[email] trait ErrorDescriptions {
   private[email] def dataNotFound: ErrorDescription =
