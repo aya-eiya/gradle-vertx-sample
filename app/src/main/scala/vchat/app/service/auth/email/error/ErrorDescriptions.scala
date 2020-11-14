@@ -30,7 +30,7 @@ private[email] trait ErrorDescriptions {
   private[email] def invalidSessionID: ErrorDescription =
     ErrorDescription(
       reason = "sessionIDが正しくありません",
-      todo = "Access-Tokenヘッダーに有効なトークンを指定してください",
+      todo = "Session-Idヘッダーに有効なトークンを指定してください",
       reference = ""
     )
   private[email] def failedToSetContext: ErrorDescription =

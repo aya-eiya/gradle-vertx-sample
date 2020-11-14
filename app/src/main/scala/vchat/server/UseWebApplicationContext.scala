@@ -9,7 +9,7 @@ import vchat.state.models.AccessContext
 import vchat.state.models.values.SessionID
 
 object UseWebApplicationContext {
-  def sessionIDHeaderName = "Access-Token"
+  def sessionIDHeaderName = "Session-Id"
 }
 
 trait UseWebApplicationContext {
