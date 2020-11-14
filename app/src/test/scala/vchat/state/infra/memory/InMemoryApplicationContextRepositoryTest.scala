@@ -5,7 +5,7 @@ import cats.effect.testing.scalatest.AsyncIOSpec
 import org.scalatest.funspec.AsyncFunSpec
 import org.scalatest.matchers.should.Matchers
 import vchat.auth.domain.models.LoginContext
-import vchat.auth.domain.models.values.AuthToken
+import vchat.auth.domain.models.values.AccessToken
 import vchat.auth.domain.models.values.email.EmailAuthNStatus
 import vchat.state.models.AccessContext
 import vchat.state.models.values.SessionID
@@ -44,7 +44,7 @@ class InMemoryApplicationContextRepositoryTest
       it("登録したLoginContextを再取得できること") {
         val given = LoginContext(
           key0,
-          EmailAuthNStatus(AuthToken(key0), isAuthed = true)
+          EmailAuthNStatus(AccessToken(key0), isAuthed = true)
         )
         val f = for {
           _ <- repo.putContext(key0, given)
@@ -82,7 +82,7 @@ class InMemoryApplicationContextRepositoryTest
       it("1つ目のキーで登録したコンテキストに変化がないこと") {
         val given = LoginContext(
           key0,
-          EmailAuthNStatus(AuthToken(key0), isAuthed = true)
+          EmailAuthNStatus(AccessToken(key0), isAuthed = true)
         )
         val f = for {
           c <- repo.contextOf(key0)

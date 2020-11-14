@@ -25,7 +25,7 @@ object GraphQLSchema {
     def emailAddress: AuthEmailAddress = AuthEmailAddress(rawEmailAddress)
   }
 
-  case class LoginStatusData(sessionID: String, authToken: String)
+  case class LoginStatusData(sessionID: String, accessToken: String)
 
 }
 
@@ -36,7 +36,7 @@ trait GraphQLSchema {
     """
       |type Status {
       |  sessionID: String!
-      |  authToken: String
+      |  accessToken: String
       |}
       |
       |input EmailAuthInput {

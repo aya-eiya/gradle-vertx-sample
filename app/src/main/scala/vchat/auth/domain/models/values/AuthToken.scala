@@ -6,7 +6,7 @@ import java.util.Base64
 
 import vchat.state.models.values.SessionID
 
-object AuthToken {
+object AccessToken {
   val salt = "hi#t @Aj%B i2+4 bdLk"
   val digest: MessageDigest = MessageDigest.getInstance("SHA-256")
   private def getCheckSum(token: SessionID): Array[Byte] =
@@ -14,7 +14,7 @@ object AuthToken {
 
 }
 
-case class AuthToken(token: SessionID) {
-  import AuthToken._
+case class AccessToken(token: SessionID) {
+  import AccessToken._
   def base64: String = Base64.getEncoder.encodeToString(getCheckSum(token))
 }

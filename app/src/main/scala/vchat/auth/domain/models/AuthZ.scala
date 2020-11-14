@@ -1,7 +1,7 @@
 package vchat.auth.domain.models
 
 import cats.effect.IO
-import vchat.auth.domain.models.values.AuthToken
+import vchat.auth.domain.models.values.AccessToken
 
 trait Role {}
 
@@ -17,5 +17,5 @@ trait AuthZStatus {
   *
   */
 trait AuthZ {
-  def verifyToken(token: AuthToken): IO[AuthZStatus]
+  def verifyToken(token: AccessToken): IO[AuthZStatus]
 }
