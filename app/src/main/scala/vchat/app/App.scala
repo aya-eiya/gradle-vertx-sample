@@ -1,22 +1,35 @@
 package vchat.app
 
+import cats.effect.{ExitCode, IO, IOApp}
+import com.typesafe.scalalogging.LazyLogging
 import io.vertx.scala.core.Vertx
 import vchat.app.service.auth.EmailAuth
 import vchat.app.service.message.Message
 import vchat.app.service.user.User
+import fs2.Stream
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Success}
+object App extends IOApp with LazyLogging {
+  import logger._
+  val vertx: Vertx = Vertx.vertx()
+  val loggerOptions: List[String] = Nil
 
-object App {
-  val vertx = Vertx.vertx()
-  def main(args: Array[String]): Unit =
-    Seq(
-      vertx.deployVerticleFuture(EmailAuth.verticleName),
-      vertx.deployVerticleFuture(Message.verticleName),
-      vertx.deployVerticleFuture(User.verticleName)
-    ).foreach(_.onComplete {
-      case Success(s) => println(s"Verticle id is: $s")
-      case Failure(t) => t.printStackTrace()
-    })
+  def deploy(name: String): Stream[IO, String] =
+    Stream.eval(IO.fromFuture(IO(vertx.deployVerticleFuture(name))))
+
+  def vertxApp: IO[ExitCode] =
+    (for {
+      id1 <- deploy(EmailAuth.verticleName)
+      id2 <- deploy(Message.verticleName)
+      id3 <- deploy(User.verticleName)
+    } yield {
+      info(id1)
+      info(id2)
+      info(id3)
+    }).compile.drain
+      .as(ExitCode.Success)
+
+  override def run(args: List[String]): IO[ExitCode] =
+    for {
+      app <- vertxApp
+    } yield app
 }

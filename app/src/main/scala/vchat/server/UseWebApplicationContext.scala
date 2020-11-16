@@ -3,6 +3,7 @@ package vchat.server
 import _root_.graphql.schema.DataFetchingEnvironment
 import cats.data.OptionT
 import cats.effect.IO
+import com.typesafe.scalalogging.LazyLogging
 import io.vertx.scala.ext.web.RoutingContext
 import vchat.state.api.ApplicationContextManager
 import vchat.state.models.AccessContext
@@ -12,7 +13,8 @@ object UseWebApplicationContext {
   def sessionIDHeaderName = "Session-Id"
 }
 
-trait UseWebApplicationContext {
+trait UseWebApplicationContext extends LazyLogging {
+  import logger._
   import UseWebApplicationContext._
   def contextManager: ApplicationContextManager
 
@@ -26,16 +28,17 @@ trait UseWebApplicationContext {
       context: RoutingContext
   ): OptionT[IO, SessionID] =
     for {
-      c <- getHeaderToken(context)
-      _ = println(s"a-c:$c")
+      c <- getSessionIdFromHeader(context)
       t = SessionID(c)
-      _ = println(s"a-t:$t")
+      _ = info(s"SessionID(header):$t")
       v <- contextManager.getApplicationContext(t)
-      _ = println(s"a-v:$v")
+      _ = info(s"ApplicationContext of $t:$v")
       _ <- v.get[AccessContext]
     } yield t
 
-  private def getHeaderToken(context: RoutingContext) =
+  private def getSessionIdFromHeader(
+      context: RoutingContext
+  ): OptionT[IO, String] =
     OptionT(
       IO(
         context
@@ -47,10 +50,4 @@ trait UseWebApplicationContext {
         }
       )
     )
-}
-
-trait UseGraphQLApplicationContext extends UseWebApplicationContext {
-  def getSessionID(
-      env: DataFetchingEnvironment
-  ): OptionT[IO, SessionID] = getSessionID(env.getContext[RoutingContext])
 }

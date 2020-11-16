@@ -3,13 +3,13 @@ package vchat.auth.domain.models
 import cats.effect.IO
 import vchat.auth.domain.models.values.AccessToken
 
-trait Role {}
+trait Privilege {}
 
 /**
   * 認可状態を表す
   */
 trait AuthZStatus {
-  val role: Role
+  val privilege: Privilege
   def hasRight: Boolean
 }
 

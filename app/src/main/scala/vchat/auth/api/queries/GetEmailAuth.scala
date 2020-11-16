@@ -2,6 +2,7 @@ package vchat.auth.api.queries
 
 import cats.data.EitherT
 import cats.effect.IO
+import com.typesafe.scalalogging.LazyLogging
 import vchat.auth.domain.models.values.email._
 import vchat.auth.domain.repositories.MemberEmailRepository
 import vchat.logging.models.ErrorDescription
@@ -37,7 +38,8 @@ object GetEmailAuth {
       ErrorDescriptions.wrongEmailAddressDescription
     )
 }
-trait GetEmailAuth {
+trait GetEmailAuth extends LazyLogging {
+  import logger._
   import GetEmailAuth._
   val emailRepo: MemberEmailRepository
 

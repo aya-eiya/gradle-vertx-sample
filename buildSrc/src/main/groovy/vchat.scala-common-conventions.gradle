@@ -52,6 +52,7 @@ dependencies {
                     "co.helmethair:scalatest-junit-runner:${junitRunnerVersion}"
 
     // Common Type Utilities
+    compileOnly "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.typelevel:cats-core_${scalaVersion}:${catsVersion}",
                    "co.fs2:fs2-core_${scalaVersion}:${fs2Version}",
                    "co.fs2:fs2-io_${scalaVersion}:${fs2Version}",
@@ -61,7 +62,7 @@ dependencies {
                    "io.circe:circe-core_${scalaVersion}:${circeVersion}",
                    "io.circe:circe-generic_${scalaVersion}:${circeVersion}",
                    "io.circe:circe-parser_${scalaVersion}:${circeVersion}",
-                   "org.slf4j:slf4j-api:${slf4jVersion}",
+                   "org.slf4j:slf4j-simple:${slf4jVersion}",
                    "com.typesafe.scala-logging:scala-logging_${scalaVersion}:${scalaLoggingVersion}"
 }
 

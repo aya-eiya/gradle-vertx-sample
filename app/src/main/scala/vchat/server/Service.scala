@@ -49,7 +49,7 @@ abstract class Service extends ScalaVerticle with AppEnv {
         case CONNECT => router.connect
         case PATCH   => router.patch
         case TRACE   => router.trace
-        case _       => router.get
+        case _       => router.head
       }
       .foreach(_.handler(loggerHandler).handler(handler))
 
