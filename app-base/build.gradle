@@ -1,0 +1,8 @@
+plugins {
+    id 'vchat.scala-vertx-application-conventions'
+}
+
+dependencies {
+    implementation project(':logging'),
+            project(':domains')
+}

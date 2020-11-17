@@ -1,0 +1,19 @@
+plugins {
+    // Apply the common convention plugin for shared build configuration between library and application projects.
+    id 'vchat.scala-common-conventions'
+
+    // Apply the application plugin to add support for building a CLI application in Java.
+    id 'application'
+}
+
+ext {
+    vertxVersion = '3.+'
+    scalaVersion = project.ext['scalaVersion']
+}
+
+dependencies {
+    implementation "io.vertx:vertx-core:${vertxVersion}" ,
+    "io.vertx:vertx-lang-scala_${scalaVersion}:${vertxVersion}" ,
+    "io.vertx:vertx-web-scala_${scalaVersion}:${vertxVersion}" ,
+    "io.vertx:vertx-web-graphql:${vertxVersion}"
+}

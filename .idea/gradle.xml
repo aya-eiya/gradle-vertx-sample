@@ -11,10 +11,12 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app-base" />
             <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/data-types" />
             <option value="$PROJECT_DIR$/db" />
+            <option value="$PROJECT_DIR$/domains" />
             <option value="$PROJECT_DIR$/logging" />
-            <option value="$PROJECT_DIR$/utilities" />
           </set>
         </option>
       </GradleProjectSettings>

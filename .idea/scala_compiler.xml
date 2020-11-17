@@ -9,7 +9,7 @@
         <parameter value="-target:jvm-1.8" />
       </parameters>
     </profile>
-    <profile name="Gradle 2" modules="vchat.app.main,vchat.app.test,vchat.db.main,vchat.db.test,vchat.logging.main,vchat.logging.test,vchat.utilities.main,vchat.utilities.test">
+    <profile name="Gradle 2" modules="vchat.app-base.main,vchat.app-base.test,vchat.app.main,vchat.app.test,vchat.data-types.main,vchat.data-types.test,vchat.db.main,vchat.db.test,vchat.domains.main,vchat.domains.test,vchat.logging.main,vchat.logging.test,vchat.utilities.main,vchat.utilities.test">
       <option name="deprecationWarnings" value="true" />
       <option name="uncheckedWarnings" value="true" />
       <parameters>

@@ -6,7 +6,7 @@ import io.vertx.core.Promise
 import vchat.app.service.auth.email.schema.GraphQLSchema.LoginStatusData
 import vchat.server.graphql.DataFetcherHandler
 import cats.data.EitherT
-import vchat.auth.domain.models.values.email.EmailAuthNErrorStatus
+import vchat.auth.models.values.email.EmailAuthNErrorStatus
 
 case class VerifyPasswordDataFetcher(
     login: DataFetchingEnvironment => EitherT[

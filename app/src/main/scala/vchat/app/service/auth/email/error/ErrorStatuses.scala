@@ -1,6 +1,6 @@
 package vchat.app.service.auth.email.error
 
-import vchat.auth.domain.models.values.email.EmailAuthNErrorStatus
+import vchat.auth.models.values.email.EmailAuthNErrorStatus
 
 trait ErrorStatuses extends ErrorDescriptions {
   def emailAddressNotFoundStatus: EmailAuthNErrorStatus =

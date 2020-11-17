@@ -15,19 +15,23 @@ import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
 import vchat.app.service.auth.email.VerifyPasswordDataFetcher
 import vchat.app.service.auth.email.error.ErrorStatuses
 import vchat.app.service.auth.email.schema.GraphQLSchema
-import vchat.auth.api.EmailAuthorizer
-import vchat.auth.api.impl.StaticEmailAuthorizer
-import vchat.auth.domain.models.LoginContext
-import vchat.auth.domain.models.values.email.{
-  EmailAuthNErrorStatus,
-  EmailAuthNStatus
+import vchat.auth.api.email.EmailAuthorizer
+import vchat.auth.models.values.email.{EmailAuthNErrorStatus, EmailAuthNStatus}
+import vchat.server.graphql.{
+  DataFetcherHandler,
+  GraphQLMixIn,
+  UseGraphQLApplicationContext
 }
-import vchat.server.graphql.{DataFetcherHandler, UseGraphQLApplicationContext}
 import vchat.server.graphql.state.SessionIDDataFetcher
-import vchat.server.{GraphQLMixIn, Service}
+import vchat.server.Service
 import vchat.state.api.ApplicationContextManager
-import vchat.state.api.impl.StaticApplicationContextManager
 import vchat.state.models.values.SessionID
+import vchat.app.env.AppEnvMap
+import vchat.auth.models.LoginContext
+import vchat.auth.infra.memory.{
+  InMemoryApplicationContextManager,
+  InMemoryEmailAuthorizer
+}
 
 object EmailAuth extends GraphQLSchema with ErrorStatuses {
   def verticleName: String = nameForVerticle[EmailAuth]
@@ -35,13 +39,14 @@ object EmailAuth extends GraphQLSchema with ErrorStatuses {
 
 class EmailAuth
     extends Service
+    with AppEnvMap
     with GraphQLMixIn
     with UseGraphQLApplicationContext {
   import logger._
   import EmailAuth._
   import email.schema.GraphQLSchema._
 
-  def authorizer: EmailAuthorizer = StaticEmailAuthorizer
+  def authorizer: EmailAuthorizer = InMemoryEmailAuthorizer
   def verifyPasswordDataFetcher: DataFetcherHandler[LoginStatusData] =
     VerifyPasswordDataFetcher(login)
   def sessionIDDataFetcher: DataFetcherHandler[String] =
@@ -50,7 +55,7 @@ class EmailAuth
     )
 
   override def contextManager: ApplicationContextManager =
-    StaticApplicationContextManager
+    InMemoryApplicationContextManager
 
   override def graphQLHandler: GraphQL = {
     val parser = new SchemaParser

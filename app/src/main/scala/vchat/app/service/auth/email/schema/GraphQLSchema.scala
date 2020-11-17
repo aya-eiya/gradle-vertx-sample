@@ -9,10 +9,7 @@ import vchat.app.service.auth.EmailAuth.{
   failedToSetContextStatus,
   passwordNotFoundStatus
 }
-import vchat.auth.domain.models.values.email.{
-  AuthEmailAddress,
-  EmailAuthNErrorStatus
-}
+import vchat.auth.models.values.email.{AuthEmailAddress, EmailAuthNErrorStatus}
 
 import scala.collection.JavaConverters.mapAsScalaMapConverter
 

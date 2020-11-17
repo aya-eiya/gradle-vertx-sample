@@ -1,0 +1,3 @@
+plugins {
+    id 'vchat.scala-library-conventions'
+}
