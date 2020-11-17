@@ -2,7 +2,7 @@ package vchat.app.service.auth.email.error
 
 import vchat.logging.models.ErrorDescription
 
-private[email] trait ErrorDescriptions {
+private[email] trait EmailAuthServiceErrorDescriptions {
   private[email] def dataNotFound: ErrorDescription =
     ErrorDescription(
       reason = "送信データが取得できませんでした",

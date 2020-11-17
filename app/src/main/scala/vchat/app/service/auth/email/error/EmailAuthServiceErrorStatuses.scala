@@ -2,7 +2,7 @@ package vchat.app.service.auth.email.error
 
 import vchat.auth.models.values.email.EmailAuthNErrorStatus
 
-object ErrorStatuses extends ErrorDescriptions {
+object EmailAuthServiceErrorStatuses extends EmailAuthServiceErrorDescriptions {
   def emailAddressNotFoundStatus: EmailAuthNErrorStatus =
     EmailAuthNErrorStatus(
       EmailAuthNErrorStatus.memberNotFound,

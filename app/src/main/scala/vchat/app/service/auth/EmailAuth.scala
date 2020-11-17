@@ -13,7 +13,7 @@ import graphql.schema.idl.{
 }
 import io.vertx.lang.scala.ScalaVerticle.nameForVerticle
 import vchat.app.service.auth.email.VerifyPasswordDataFetcher
-import vchat.app.service.auth.email.error.ErrorStatuses
+import vchat.app.service.auth.email.error.EmailAuthServiceErrorStatuses
 import vchat.app.service.auth.email.schema.GraphQLSchema
 import vchat.auth.api.email.EmailAuthorizer
 import vchat.auth.models.values.email.{EmailAuthNErrorStatus, EmailAuthNStatus}
@@ -43,7 +43,7 @@ class EmailAuth
     with GraphQLMixIn
     with UseGraphQLApplicationContext {
   import logger._
-  import ErrorStatuses._
+  import EmailAuthServiceErrorStatuses._
   import GraphQLSchema._
 
   def authorizer: EmailAuthorizer = InMemoryEmailAuthorizer

@@ -3,12 +3,7 @@ package vchat.app.service.auth.email.schema
 import cats.data.EitherT
 import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
-import vchat.app.service.auth.email.error.ErrorStatuses.{
-  emailAddressAndPasswordNotFoundStatus,
-  emailAddressNotFoundStatus,
-  failedToSetContextStatus,
-  passwordNotFoundStatus
-}
+import vchat.app.service.auth.email.error.EmailAuthServiceErrorStatuses._
 import vchat.auth.models.values.email.{AuthEmailAddress, EmailAuthNErrorStatus}
 
 import scala.collection.JavaConverters.mapAsScalaMapConverter
