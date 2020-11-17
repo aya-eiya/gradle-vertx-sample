@@ -27,24 +27,24 @@ import vchat.server.Service
 import vchat.state.api.ApplicationContextManager
 import vchat.state.models.values.SessionID
 import vchat.app.env.AppEnvMap
+import vchat.app.service.AppService
 import vchat.auth.models.LoginContext
 import vchat.auth.infra.memory.{
   InMemoryApplicationContextManager,
   InMemoryEmailAuthorizer
 }
 
-object EmailAuth extends GraphQLSchema with ErrorStatuses {
+object EmailAuth {
   def verticleName: String = nameForVerticle[EmailAuth]
 }
 
 class EmailAuth
-    extends Service
-    with AppEnvMap
+    extends AppService
     with GraphQLMixIn
     with UseGraphQLApplicationContext {
   import logger._
-  import EmailAuth._
-  import email.schema.GraphQLSchema._
+  import ErrorStatuses._
+  import GraphQLSchema._
 
   def authorizer: EmailAuthorizer = InMemoryEmailAuthorizer
   def verifyPasswordDataFetcher: DataFetcherHandler[LoginStatusData] =

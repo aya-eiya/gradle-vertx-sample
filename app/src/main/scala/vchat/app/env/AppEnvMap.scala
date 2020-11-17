@@ -1,5 +1,6 @@
 package vchat.app.env
 
+import vchat.app.env.AppEnv.Env
 import io.vertx.core.http.HttpMethod.{DELETE, GET, POST, PUT}
 import vchat.app.env.AppEnvMap.env
 import vchat.app.service.auth.EmailAuth

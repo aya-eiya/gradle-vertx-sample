@@ -24,7 +24,10 @@ object GraphQLHandler {
 
   implicit def javaHandler2ScalaHandler(
       handler: JGraphQLHandler
-  ): GraphQLHandler = new GraphQLHandler(handler)
+  ): GraphQLHandler =
+    new GraphQLHandler {
+      override val innerHandler: JGraphQLHandler = handler
+    }
   implicit def jRoutingContext2RoutingContext(
       rc: JRoutingContext
   ): RoutingContext = new RoutingContext(rc)
@@ -32,24 +35,24 @@ object GraphQLHandler {
   def create(graphQL: GraphQL): GraphQLHandler = JGraphQLHandler.create(graphQL)
   def create(graphQL: GraphQL, options: GraphQLHandlerOptions): GraphQLHandler =
     JGraphQLHandler.create(graphQL, options)
+
+  private[graphql] trait JGraphQLHandlerMethods {
+    val innerHandler: JGraphQLHandler
+    def innerQueryContext(
+        factory: function.Function[JRoutingContext, AnyRef]
+    ): JGraphQLHandler = innerHandler.queryContext(factory)
+    def innerDataLoaderRegistry(
+        factory: function.Function[JRoutingContext, DataLoaderRegistry]
+    ): JGraphQLHandler = innerHandler.dataLoaderRegistry(factory)
+    def innerLocale(
+        factory: function.Function[JRoutingContext, Locale]
+    ): JGraphQLHandler = innerHandler.locale(factory)
+  }
 }
 
-trait JGraphQLHandlerMethods {
-  val innerHandler: JGraphQLHandler
-  def innerQueryContext(
-      factory: function.Function[JRoutingContext, AnyRef]
-  ): JGraphQLHandler = innerHandler.queryContext(factory)
-  def innerDataLoaderRegistry(
-      factory: function.Function[JRoutingContext, DataLoaderRegistry]
-  ): JGraphQLHandler = innerHandler.dataLoaderRegistry(factory)
-  def innerLocale(
-      factory: function.Function[JRoutingContext, Locale]
-  ): JGraphQLHandler = innerHandler.locale(factory)
-}
-
-class GraphQLHandler(val innerHandler: JGraphQLHandler)
+trait GraphQLHandler
     extends Handler[RoutingContext]
-    with JGraphQLHandlerMethods {
+    with GraphQLHandler.JGraphQLHandlerMethods {
   import GraphQLHandler._
 
   override def handle(event: RoutingContext): Unit =

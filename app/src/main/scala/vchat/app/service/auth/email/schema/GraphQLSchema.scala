@@ -3,7 +3,7 @@ package vchat.app.service.auth.email.schema
 import cats.data.EitherT
 import cats.effect.IO
 import graphql.schema.DataFetchingEnvironment
-import vchat.app.service.auth.EmailAuth.{
+import vchat.app.service.auth.email.error.ErrorStatuses.{
   emailAddressAndPasswordNotFoundStatus,
   emailAddressNotFoundStatus,
   failedToSetContextStatus,
@@ -23,11 +23,6 @@ object GraphQLSchema {
   }
 
   case class LoginStatusData(sessionID: String, accessToken: String)
-
-}
-
-trait GraphQLSchema {
-  import GraphQLSchema._
 
   def schema: String =
     """
