@@ -8,4 +8,4 @@
  */
 
 rootProject.name = 'vchat'
-include('app-base','app', 'domains', 'data-types', 'logging', 'db')
+include('app-base','app', 'domains', 'data-types', 'logging', 'db', 'docs')

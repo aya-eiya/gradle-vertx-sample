@@ -1,0 +1,77 @@
+@startuml
+skinparam linetype polyline
+left to right direction
+
+card "auth.Infra" as Infra {
+  package "InMemory" as Infra.memory {
+    together {
+      class "InMemoryApplicationContextManager" as Infra.memory.InMemoryApplicationContextManager {
+        +tokenRepo: SessionIDRepository
+        +appContextRepo: ApplicationContextRepository
+      }
+      class "InMemoryApplicationContextRepository" as Infra.memory.InMemoryApplicationContextRepository {
+        -data: Map[SessionID,ApplicationContext]
+        +resetTimeout()
+        +contextOf()
+        +create()
+        +putContext[T <: Context: ClassTag](context: T)
+      }
+      class "InMemorySessionIDRepository" as Infra.memory.InMemorySessionIDRepository {
+        -data: MutMap[SessionID, SessionIDStatus]
+        +create(): IO[SessionID]
+        +verify(sessionID: SessionID): IO[SessionIDStatus]
+      }
+    }
+    together {
+      class "InMemoryEmailAuthorizer" as Infra.memory.InMemoryEmailAuthorizer {
+        +emailRepo: MemberEmailRepository
+      }
+
+      class "InMemoryMemberEmailRepository" as Infra.memory.InMemoryMemberEmailRepository {
+        -data: Map[AuthEmailAddress, EncryptedPassword]
+        +exists(emailAddress: AuthEmailAddress,rawPassword: String): OptionT[IO, Boolean]
+      }
+    }
+  }
+}
+
+package "auth.service" as auth.service {
+  class "EmailAuth" as auth.service.EmailAuth {
+    +emailAuthorizer: EmailAuthorizer
+    +contextManager: ApplicationContextManager
+    +login(): LoginStatusData
+  }
+}
+
+component "auth" as auth {
+  interface "MemberEmailRepository" as auth.MemberEmailRepository {
+  }
+  interface "EmailAuthorizer" as auth.EmailAuthorizer {
+  }
+}
+
+component "state" {
+  interface "ApplicationContextManager" as state.ApplicationContextManager
+}
+
+component "vertx" {
+  component "app-base"{
+  }
+}
+
+
+"app-base" <|-- auth.service.EmailAuth
+auth.service.EmailAuth --* Infra.memory.InMemoryEmailAuthorizer
+auth.service.EmailAuth --* Infra.memory.InMemoryApplicationContextManager
+
+Infra.memory.InMemoryEmailAuthorizer --|> auth.EmailAuthorizer
+Infra.memory.InMemoryEmailAuthorizer --* Infra.memory.InMemoryMemberEmailRepository
+Infra.memory.InMemoryMemberEmailRepository --|> auth.MemberEmailRepository
+
+Infra.memory.InMemoryApplicationContextManager --* Infra.memory.InMemorySessionIDRepository
+Infra.memory.InMemoryApplicationContextManager --* Infra.memory.InMemoryApplicationContextRepository
+
+Infra.memory.InMemoryApplicationContextManager --|> state.ApplicationContextManager
+
+Infra.memory.InMemoryEmailAuthorizer -- Infra.memory.InMemoryApplicationContextManager
+@endtuml

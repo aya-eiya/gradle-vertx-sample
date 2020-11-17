@@ -45,15 +45,13 @@ class EmailAuth
   import GraphQLSchema._
 
   def authorizer: EmailAuthorizer = InMemoryEmailAuthorizer
+  override def contextManager: ApplicationContextManager =
+    InMemoryApplicationContextManager
+
   def verifyPasswordDataFetcher: DataFetcherHandler[LoginStatusData] =
     VerifyPasswordDataFetcher(login)
   def sessionIDDataFetcher: DataFetcherHandler[String] =
-    SessionIDDataFetcher(
-      getAvailableSessionID
-    )
-
-  override def contextManager: ApplicationContextManager =
-    InMemoryApplicationContextManager
+    SessionIDDataFetcher(getAvailableSessionID)
 
   override def graphQLHandler: GraphQL = {
     val parser = new SchemaParser

@@ -1,0 +1,85 @@
+@startuml
+skinparam linetype polyline
+left to right direction
+
+card "Domain" as auth.Domain {
+  card "Command and Query" as auth.Domain.CQ {
+    package "api.email" as auth.Domain.CQ.api.email {
+      interface "EmailAuthorizer" as auth.Domain.CQ.api.email.EmailAuthorizer {
+        +memberEmailRepository
+        +createAuthNStatus()
+        +verifyPassword()
+        +verifyEmailAddress()
+      }
+      package "command" as auth.Domain.CQ.api.email.command {
+        interface "CreateEmailAuth" as auth.Domain.CQ.api.email.command.CreateEmailAuth {
+          +createAuthNStatus()
+        }
+      }
+      package "query" as auth.Domain.CQ.api.email.query {
+        interface "GetEmailAuth" as auth.Domain.CQ.api.email.query.GetEmailAuth {
+          +verifyPassword()
+          +verifyEmailAddress()
+        }
+      }
+    }
+  }
+
+  card "Repository" as auth.Domain.Repository {
+    interface "MemberEmailRepository" as auth.Domain.Repository.MemberEmailRepository {
+      +exists(emailAddress: AuthEmailAddress,rawPassword: String): OptionT[IO, Boolean]
+    }
+  }
+
+  card "Models" as auth.Domain.models {
+    interface "AuthN" as auth.Domain.models.AuthN {
+      +tryAuth()
+    }
+    interface "AuthZ" as auth.Domain.models.AuthZ {
+      +verifyToken()
+    }
+    class "LoginContext" as auth.Domain.models.LoginContext {
+      +sessionID: SessionID
+      +authNStatus: AuthNStatus
+    }
+    card "values" as auth.Domain.models.values {
+      interface "AccessToken" as auth.Domain.models.values.AccessToken {
+        +token: SessionID
+        +base64(): String
+      }
+      interface "AuthNStatus" as auth.Domain.models.values.AuthNStatus {
+      }
+      package "auth.domain.values.email" {
+        class EmailAccessToken
+        class EmailAuthNStatus
+      }
+    }
+  }
+}
+
+card "UseCase" as auth.UseCase {
+
+   package "vchat.app" as auth.UseCase.vchat.app {
+     package "service.auth.email" as auth.UseCase.vchat.app.email {
+       class "EmailAuth" as auth.UseCase.vchat.app.email.EmailAuth {
+         +authorizer: EmailAuthorizer
+         +contextManager: ContextManager
+       }
+     }
+   }
+}
+
+auth.Domain.Repository.MemberEmailRepository *-up- auth.Domain.CQ.api.email.EmailAuthorizer
+auth.Domain.CQ.api.email.command.CreateEmailAuth <|-up- auth.Domain.CQ.api.email.EmailAuthorizer
+auth.Domain.CQ.api.email.query.GetEmailAuth <|-up- auth.Domain.CQ.api.email.EmailAuthorizer
+
+auth.Domain.models.AuthZ -up- auth.Domain.models.values.AccessToken: verify >
+auth.Domain.models.AuthN <|-up- auth.Domain.models.values.AccessToken
+auth.Domain.models.values.AccessToken <|-up- EmailAccessToken
+auth.Domain.models.values.AuthNStatus <|-up- EmailAuthNStatus
+
+auth.Domain.models.LoginContext -right-* auth.Domain.models.values.AuthNStatus
+auth.Domain.models.LoginContext -down-* state.Domain.models.values.SessionID
+
+auth.UseCase.vchat.app.email.EmailAuth --* auth.Domain.CQ.api.email.EmailAuthorizer
+@enduml

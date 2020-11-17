@@ -84,8 +84,7 @@ Scalaではコンパイラープラグインを使用して、Syntaxを追加し
 ## テストエンジンにScalaTestを使う
 
 上記ファイルに、
-```
-
+```gradle:${projectName}.scala-common-conventions.gradle
     // Use JUnit Jupiter API & ScalaTest for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.+',
                        "org.scalatest:scalatest_${scalaVersion}:3.2.+"
@@ -103,4 +102,34 @@ Scalaではコンパイラープラグインを使用して、Syntaxを追加し
 
 ただし、後で入れ替えられるようにレイヤーは考えておく。
 
+## Logging
+
+JVMのLoggerは複雑なので、久しぶりに一からプロジェクトを作ったのに合わせて改めて調べてみたけれど、あんまり昔と状況は変わっていなさそう。
+
+SFL4J + Log4J 2 + ScalaLoggingという構成でLoggerを設定してみる。
+
+
+
+```gradle
+    compileOnly "org.slf4j:slf4j-api:${slf4jVersion}" // 別に implementation でも可。気分
+    implementation "org.apache.logging.log4j:log4j-slf4j-impl:${log4jVersion}",
+            "com.typesafe.scala-logging:scala-logging_${scalaVersion}:${scalaLoggingVersion}"
+```
+
+設定ファイル、`app/src/main/resources/jlf4j2.properties`を、とりあえずDebugレベルが出力できるように設定する。
+
+```properties
+status = error
+name = PropertiesConfig
+appenders = console
+
+appender.console.type = Console
+appender.console.name = STDOUT
+appender.console.layout.type = PatternLayout
+appender.console.layout.pattern = %d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+
+rootLogger.level = debug
+rootLogger.appenderRefs = stdout
+rootLogger.appenderRef.stdout.ref = STDOUT
+```
 

@@ -1,0 +1,17 @@
+plugins {
+    id "de.gafertp.plantuml" version "2.0.1"
+}
+
+ext {
+    outDir = 'generated'
+}
+
+plantUml {
+    render input: "uml/part/*.puml", output: "generated", format: 'svg'
+}
+
+task generateSources(type: Copy) {
+    from 'README.template.md'
+    into 'README.md'
+    filter { String line -> line.matches("[]") }
+}
