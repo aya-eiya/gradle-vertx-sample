@@ -1,6 +1,5 @@
 package vchat.server
 
-import _root_.graphql.schema.DataFetchingEnvironment
 import cats.data.OptionT
 import cats.effect.IO
 import com.typesafe.scalalogging.LazyLogging

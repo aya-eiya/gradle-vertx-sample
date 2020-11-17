@@ -23,10 +23,8 @@ import vchat.server.graphql.{
   UseGraphQLApplicationContext
 }
 import vchat.server.graphql.state.SessionIDDataFetcher
-import vchat.server.Service
 import vchat.state.api.ApplicationContextManager
 import vchat.state.models.values.SessionID
-import vchat.app.env.AppEnvMap
 import vchat.app.service.AppService
 import vchat.auth.models.LoginContext
 import vchat.auth.infra.memory.{

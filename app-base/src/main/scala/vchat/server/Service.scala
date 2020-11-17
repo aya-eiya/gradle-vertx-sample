@@ -1,19 +1,17 @@
 package vchat.server
 
-import _root_.graphql.GraphQL
+import com.typesafe.scalalogging.LazyLogging
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod._
 import io.vertx.lang.scala.ScalaVerticle
-import io.vertx.scala.core.http.{HttpServerRequest, HttpServerResponse}
 import io.vertx.scala.ext.web.handler.LoggerHandler
 import io.vertx.scala.ext.web.{Router, RoutingContext}
 import vchat.app.env.AppEnv
-import vchat.server.graphql.GraphQLHandler
 
 import scala.concurrent.Future
 
-abstract class Service extends ScalaVerticle with AppEnv {
-
+abstract class Service extends ScalaVerticle with AppEnv with LazyLogging {
+  import logger._
   def loggerHandler: LoggerHandler = LoggerHandler.create()
 
   def handler: Handler[RoutingContext]
@@ -39,6 +37,10 @@ abstract class Service extends ScalaVerticle with AppEnv {
       .createHttpServer()
       .requestHandler(router.accept)
       .listenFuture(port, host)
-      .map(_ => ())
+      .map { _ =>
+        info(
+          s"${this.getClass.getName} service started. Port($port) Allowed Methods[${methods.mkString(",")}]"
+        )
+      }
   }
 }

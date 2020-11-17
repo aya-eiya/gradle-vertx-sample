@@ -16,7 +16,7 @@ object App extends IOApp with LazyLogging {
   def deploy(name: String): Stream[IO, String] =
     Stream.eval(IO.fromFuture(IO(vertx.deployVerticleFuture(name))))
 
-  def vertxApp: IO[ExitCode] =
+  def vertxApps: IO[ExitCode] =
     (for {
       id1 <- deploy(EmailAuth.verticleName)
       id2 <- deploy(Message.verticleName)
@@ -30,6 +30,6 @@ object App extends IOApp with LazyLogging {
 
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      app <- vertxApp
-    } yield app
+      apps <- vertxApps
+    } yield apps
 }
