@@ -1,17 +1,28 @@
 plugins {
-    id "de.gafertp.plantuml" version "2.0.1"
+    id 'com.cosminpolifronie.gradle.plantuml' version '1.6.0'
 }
 
 ext {
-    outDir = 'generated'
+    url = 'https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated'
 }
 
 plantUml {
-    render input: "uml/part/*.puml", output: "generated", format: 'svg'
+    render input: "uml/part/*.puml", output: "generated", format: 'svg', withMetadata: false
 }
 
-task generateSources(type: Copy) {
+task render(type: Copy) {
+    dependsOn 'plantUml'
     from 'README.template.md'
-    into 'README.md'
-    filter { String line -> line.matches("[]") }
+    into '.'
+    rename { _ -> './README.md' }
+    filter { line ->
+        def m = line =~ /\[!plantUML\(file='([\w\.\/]+)\.puml',format='(svg|png)',width='([0-9]+px)'\)\]/
+        if (m) {
+            def (_, file, type, width) = m[0]
+            def gen = file.replaceAll('./uml/', '')
+            /<img src="${url}\/$gen.$type" data-type="$type" style="width:$width">/
+        } else {
+            line
+        }
+    }
 }
