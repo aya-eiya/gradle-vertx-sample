@@ -1,0 +1,27 @@
+@startuml
+skinparam linetype polyline
+
+package exception {
+  interface AppException
+}
+package models {
+  interface ErrorCode {
+    +errorType: String
+    +code: Int
+    +message: String
+    +describe(): String
+  }
+  class ErrorDescription {
+    +reason: String
+    +todo: String
+    +reference: String
+  }
+  interface ErrorStatus {
+    +code: ErrorCode
+    +description: ErrorDescription
+    +toLeft[T](): Left[T, Nothing]
+  }
+  ErrorStatus --* ErrorCode
+  ErrorStatus --* ErrorDescription
+}
+@enduml

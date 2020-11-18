@@ -1,0 +1,31 @@
+@startuml
+skinparam linetype polyline
+
+card "Domain" as Domain {
+  card "models" as Domain.models {
+    class "AccessContext" as Domain.models.AccessContext {
+      +status: SessionIDStatus
+    }
+    class "ApplicationContext" as Domain.models.ApplicationContext {
+      +childContexts: Seq[Context]
+      +get[T <: Context](Class[T]): T
+    }
+    card "values" as Domain.models.values {
+      class "SessionID" as Domain.models.values.SessionID {
+        +value: String
+      }
+      interface "SessionIDStatus" as Domain.models.values.SessionIDStatus {
+        +exists(): Boolean
+        +expired(): Boolean
+        +existsAndNotExpired(): Boolean
+      }
+      class "TimeoutSessionIDStatus" as Domain.models.values.TimeoutSessionIDStatus {
+      }
+    }
+  }
+}
+Domain.models.AccessContext o-- Domain.models.ApplicationContext
+Domain.models.values.SessionID .> Domain.models.values.SessionIDStatus : describe >
+Domain.models.values.SessionIDStatus --|> Domain.models.values.TimeoutSessionIDStatus
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+skinparam linetype polyline
+left to right direction
+
+card "UseCase" as UseCase {
+  package "api.email" as UseCase.api {
+    interface "ApplicationContextManager" as UseCase.api.ApplicationContextManager {
+    }
+    package "command" as UseCase.api.command {
+      interface "CreateApplicationContext" as UseCase.api.command.CreateApplicationContext
+      interface "CreateSessionID" as UseCase.api.command.CreateSessionID
+      interface "ResetSessionIDTimeout" as UseCase.api.command.ResetSessionIDTimeout
+      interface "SetContext" as UseCase.api.command.SetContext
+    }
+    package "query" as UseCase.api.query {
+      interface "GetApplicationContext" as UseCase.api.query.GetApplicationContext
+      interface "VerifySessionID" as UseCase.api.query.VerifySessionID
+    }
+  }
+}
+UseCase.api.ApplicationContextManager --|> UseCase.api.command.CreateApplicationContext
+UseCase.api.ApplicationContextManager --|> UseCase.api.command.CreateSessionID
+UseCase.api.ApplicationContextManager --|> UseCase.api.command.ResetSessionIDTimeout
+UseCase.api.ApplicationContextManager --|> UseCase.api.command.SetContext
+UseCase.api.ApplicationContextManager --|> UseCase.api.query.GetApplicationContext
+UseCase.api.ApplicationContextManager --|> UseCase.api.query.VerifySessionID
+@enduml

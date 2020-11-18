@@ -4,5 +4,5 @@ trait ErrorCode {
   val errorType: String
   val code: Int
   val message: String
-  def describe: String = s"[$errorType:$code]$message"
+  final def describe: String = s"[$errorType:$code]$message"
 }

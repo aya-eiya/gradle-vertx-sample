@@ -5,9 +5,28 @@ card Framework/Middleware as fw {
   component "vert.x" as fw.vertx {
   }
 
+  component "app-base" as fw.appBase {
+  }
+
   component "DB" as fw.db {
   }
-  fw.db -[hidden]- fw.vertx
+
+  fw.db -[hidden]- fw.appBase
+  fw.vertx -left-|> fw.appBase
+}
+
+card "ext" {
+   card "data-type" as pub {
+     component "PublicModels" as pub.models {
+     }
+   }
+   note left of pub.models : [一般的なデータ形式]\nDomainを横断して\nDomain/Service層の\nModelに参照されうる
+   component "Domain.Models" as domain.Models {
+   }
+   component "Service.Models" as service.Models {
+   }
+   pub.models *-up- domain.Models
+   pub.models *-up- service.Models
 }
 
 card "auth" as auth {
@@ -58,9 +77,12 @@ card "Service" as Service {
     +authUseCase: auth.UseCase...
     +stateUseCase: state.UseCase...
   }
+  component "auth.Models" as Service.authModels {
+  }
+  note right of Service.authModels:[サービス入出力モデル]\n入出力に対応する\nデータモデル
 }
 Infra.authUseCase *-- Service.auth
 Infra.stateUseCase *-- Service.auth
-Service.auth -left-|> fw.vertx
-
+Service.auth -left-|> fw.appBase
+Service.auth -left-* Service.authModels
 @enduml
