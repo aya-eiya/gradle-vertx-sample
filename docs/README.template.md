@@ -34,7 +34,7 @@ ModelのSessionIDはステートフルなアプリケーションサービスの
 
 ## Auth Infra
 
-InMemoryMaoをDBとして作成したAuthサービスの概要は以下のようになる。
+InMemoryMapをDBとして作成したAuthサービスの概要は以下のようになる。
 
 [!plantUML(file='./uml/auth.Infra.puml',format='svg',width='640px')]
 

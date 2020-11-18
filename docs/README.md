@@ -34,7 +34,7 @@ ModelのSessionIDはステートフルなアプリケーションサービスの
 
 ## Auth Infra
 
-InMemoryMaoをDBとして作成したAuthサービスの概要は以下のようになる。
+InMemoryMapをDBとして作成したAuthサービスの概要は以下のようになる。
 
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/auth.Infra.svg" data-type="svg" style="width:640px">
 
