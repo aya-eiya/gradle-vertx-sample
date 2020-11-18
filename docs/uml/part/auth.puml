@@ -3,7 +3,7 @@ skinparam linetype polyline
 left to right direction
 
 card "Domain" as auth.Domain {
-  card "Command and Query" as auth.Domain.CQ {
+  card "UseCase" as auth.Domain.CQ {
     package "api.email" as auth.Domain.CQ.api.email {
       interface "EmailAuthorizer" as auth.Domain.CQ.api.email.EmailAuthorizer {
         +memberEmailRepository
@@ -57,11 +57,11 @@ card "Domain" as auth.Domain {
   }
 }
 
-card "UseCase" as auth.UseCase {
+card "ApplicationService" as auth.Service {
 
-   package "vchat.app" as auth.UseCase.vchat.app {
-     package "service.auth.email" as auth.UseCase.vchat.app.email {
-       class "EmailAuth" as auth.UseCase.vchat.app.email.EmailAuth {
+   package "vchat.app" as auth.Service.vchat.app {
+     package "service.auth.email" as auth.Service.vchat.app.email {
+       class "EmailAuth" as auth.Service.vchat.app.email.EmailAuth {
          +authorizer: EmailAuthorizer
          +contextManager: ContextManager
        }
@@ -81,5 +81,5 @@ auth.Domain.models.values.AuthNStatus <|-up- EmailAuthNStatus
 auth.Domain.models.LoginContext -right-* auth.Domain.models.values.AuthNStatus
 auth.Domain.models.LoginContext -down-* state.Domain.models.values.SessionID
 
-auth.UseCase.vchat.app.email.EmailAuth --* auth.Domain.CQ.api.email.EmailAuthorizer
+auth.Service.vchat.app.email.EmailAuth --* auth.Domain.CQ.api.email.EmailAuthorizer
 @enduml

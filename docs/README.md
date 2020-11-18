@@ -1,5 +1,9 @@
 # UML
 
+```
+./gradlew docs:render
+```
+
 ## Auth
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/auth.svg" data-type="svg" style="width:640px">
 
@@ -8,3 +12,6 @@
 
 ## Auth Infra
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/auth.Infra.svg" data-type="svg" style="width:640px">
+
+## Architecture
+<img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/arch.svg" data-type="svg" style="width:640px">

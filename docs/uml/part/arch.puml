@@ -1,0 +1,66 @@
+@startuml
+skinparam linetype polyline
+
+card Framework/Middleware as fw {
+  component "vert.x" as fw.vertx {
+  }
+
+  component "DB" as fw.db {
+  }
+  fw.db -[hidden]- fw.vertx
+}
+
+card "auth" as auth {
+  component "auth.Domain" as auth.Domain {
+    component "auth.Models" as auth.Domain.Models{
+    }
+    component "auth.Repository" as auth.Domain.Repository {
+    }
+    auth.Domain.Models *-u- auth.Domain.Repository
+  }
+
+  component "auth.UseCase" as auth.UseCase {
+  }
+
+  auth.Domain.Repository *-- auth.UseCase
+}
+
+card "state" as state {
+  component "state.Domain" as state.Domain {
+    component "state.Models" as state.Domain.Models{
+    }
+    component "state.Repository" as state.Domain.Repository {
+    }
+    state.Domain.Models *-u- state.Domain.Repository
+  }
+
+  component "state.UseCase" as state.UseCase {
+  }
+
+  state.Domain.Repository *-- state.UseCase
+}
+
+card "Infra" as Infra {
+  class "Impl:auth.UseCase" as Infra.authUseCase {
+    +repositoryImpl: auth.Repository...
+  }
+
+  class "Impl:state.UseCase" as Infra.stateUseCase {
+    +repositoryImpl: state.Repository...
+  }
+  auth.UseCase <|-- Infra.authUseCase
+  state.UseCase <|-- Infra.stateUseCase
+}
+fw.db <|-left- Infra
+
+card "Service" as Service {
+  class "auth.Service" as Service.auth {
+    +authUseCase: auth.UseCase...
+    +stateUseCase: state.UseCase...
+  }
+}
+Infra.authUseCase *-- Service.auth
+Infra.stateUseCase *-- Service.auth
+Service.auth -left-|> fw.vertx
+
+@enduml

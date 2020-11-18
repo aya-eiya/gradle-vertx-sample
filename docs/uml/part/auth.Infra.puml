@@ -35,8 +35,8 @@ card "auth.Infra" as Infra {
   }
 }
 
-package "auth.service" as auth.service {
-  class "EmailAuth" as auth.service.EmailAuth {
+package "auth.Service" as auth.Service {
+  class "EmailAuth" as auth.Service.EmailAuth {
     +emailAuthorizer: EmailAuthorizer
     +contextManager: ApplicationContextManager
     +login(): LoginStatusData
@@ -44,14 +44,26 @@ package "auth.service" as auth.service {
 }
 
 component "auth" as auth {
-  interface "MemberEmailRepository" as auth.MemberEmailRepository {
+
+  card "UseCase" as auth.UseCase {
+    interface "EmailAuthorizer" as auth.UseCase.EmailAuthorizer {
+    }
   }
-  interface "EmailAuthorizer" as auth.EmailAuthorizer {
+
+  card "Repository" as auth.Repository {
+    interface "MemberEmailRepository" as auth.Repository.MemberEmailRepository {
+    }
   }
 }
 
-component "state" {
-  interface "ApplicationContextManager" as state.ApplicationContextManager
+
+component "state" as state {
+  card "UseCase" as state.UseCase {
+    interface "ApplicationContextManager" as state.UseCase.ApplicationContextManager
+  }
+
+  card "Repository" as state.Repository {
+  }
 }
 
 component "vertx" {
@@ -60,18 +72,18 @@ component "vertx" {
 }
 
 
-"app-base" <|-- auth.service.EmailAuth
-auth.service.EmailAuth --* Infra.memory.InMemoryEmailAuthorizer
-auth.service.EmailAuth --* Infra.memory.InMemoryApplicationContextManager
+"app-base" <|-- auth.Service.EmailAuth
+auth.Service.EmailAuth --* Infra.memory.InMemoryEmailAuthorizer
+auth.Service.EmailAuth --* Infra.memory.InMemoryApplicationContextManager
 
-Infra.memory.InMemoryEmailAuthorizer --|> auth.EmailAuthorizer
+Infra.memory.InMemoryEmailAuthorizer --|> auth.UseCase.EmailAuthorizer
 Infra.memory.InMemoryEmailAuthorizer --* Infra.memory.InMemoryMemberEmailRepository
-Infra.memory.InMemoryMemberEmailRepository --|> auth.MemberEmailRepository
+Infra.memory.InMemoryMemberEmailRepository --|> auth.Repository.MemberEmailRepository
 
 Infra.memory.InMemoryApplicationContextManager --* Infra.memory.InMemorySessionIDRepository
 Infra.memory.InMemoryApplicationContextManager --* Infra.memory.InMemoryApplicationContextRepository
 
-Infra.memory.InMemoryApplicationContextManager --|> state.ApplicationContextManager
+Infra.memory.InMemoryApplicationContextManager --|> state.UseCase.ApplicationContextManager
 
 Infra.memory.InMemoryEmailAuthorizer -- Infra.memory.InMemoryApplicationContextManager
 @endtuml

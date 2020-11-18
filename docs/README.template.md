@@ -12,3 +12,6 @@
 
 ## Auth Infra
 [!plantUML(file='./uml/auth.Infra.puml',format='svg',width='640px')]
+
+## Architecture
+[!plantUML(file='./uml/arch.puml',format='svg',width='640px')]

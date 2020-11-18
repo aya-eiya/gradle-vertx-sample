@@ -3,26 +3,25 @@ skinparam linetype polyline
 left to right direction
 
 package "state" {
-  card "Domain" as state.Domain {
-    card "Command and Query" as state.Domain.CQ {
-      package "api.email" as state.Domain.CQ.api {
-        interface "ApplicationContextManager" as state.Domain.CQ.api.ApplicationContextManager {
-        }
-        package "command" as state.Domain.CQ.api.command {
-          interface "CreateApplicationContext" as state.Domain.CQ.api.command.CreateApplicationContext
-          interface "CreateSessionID" as state.Domain.CQ.api.command.CreateSessionID
-          interface "ResetSessionIDTimeout" as state.Domain.CQ.api.command.ResetSessionIDTimeout
-          interface "SetContext" as state.Domain.CQ.api.command.SetContext
-        }
-        package "query" as state.Domain.CQ.api.query {
-          interface "GetApplicationContext" as state.Domain.CQ.api.query.GetApplicationContext
-          interface "VerifySessionID" as state.Domain.CQ.api.query.VerifySessionID
-        }
+  card "UseCase" as state.Domain.CQ {
+    package "api.email" as state.Domain.CQ.api {
+      interface "ApplicationContextManager" as state.Domain.CQ.api.ApplicationContextManager {
+      }
+      package "command" as state.Domain.CQ.api.command {
+        interface "CreateApplicationContext" as state.Domain.CQ.api.command.CreateApplicationContext
+        interface "CreateSessionID" as state.Domain.CQ.api.command.CreateSessionID
+        interface "ResetSessionIDTimeout" as state.Domain.CQ.api.command.ResetSessionIDTimeout
+        interface "SetContext" as state.Domain.CQ.api.command.SetContext
+      }
+      package "query" as state.Domain.CQ.api.query {
+        interface "GetApplicationContext" as state.Domain.CQ.api.query.GetApplicationContext
+        interface "VerifySessionID" as state.Domain.CQ.api.query.VerifySessionID
       }
     }
   }
 
-  package "Domain" as state.Domain {
+  card "Domain" as state.Domain {
+
     card "models" as state.Domain.models {
       class "AccessContext" as state.Domain.models.AccessContext {
         +status: SessionIDStatus
