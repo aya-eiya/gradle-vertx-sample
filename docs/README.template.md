@@ -15,7 +15,7 @@ Stateは、アプリケーションの状態管理を担うため、他のドメ
 ## Auth
 認証・認可サービス
 
-Emailとパスワードで認証するInMemoryMaoをDBとして作成した場合の概要図は以下となる。
+Emailとパスワードで認証する場合の概要図は以下となる。
 
 [!plantUML(file='./uml/auth.puml',format='svg',width='640px')]
 
@@ -33,5 +33,8 @@ ModelのSessionIDはステートフルなアプリケーションサービスの
 [!plantUML(file='./uml/state.Model.puml',format='svg',width='640px')]
 
 ## Auth Infra
+
+InMemoryMaoをDBとして作成したAuthサービスの概要は以下のようになる。
+
 [!plantUML(file='./uml/auth.Infra.puml',format='svg',width='640px')]
 
