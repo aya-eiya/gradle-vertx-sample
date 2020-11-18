@@ -15,7 +15,7 @@ Stateは、アプリケーションの状態管理を担うため、他のドメ
 ## Auth
 認証・認可サービス
 
-Emailとパスワードで認証するInMemoryMaoをDBとして作成した場合の概要図は以下となる。
+Emailとパスワードで認証する場合の概要図は以下となる。
 
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/auth.svg" data-type="svg" style="width:640px">
 
@@ -33,5 +33,8 @@ ModelのSessionIDはステートフルなアプリケーションサービスの
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/state.Model.svg" data-type="svg" style="width:640px">
 
 ## Auth Infra
+
+InMemoryMaoをDBとして作成したAuthサービスの概要は以下のようになる。
+
 <img src="https://raw.githubusercontent.com/aya-eiya/gradle-vertx-sample/master/docs/generated/auth.Infra.svg" data-type="svg" style="width:640px">
 

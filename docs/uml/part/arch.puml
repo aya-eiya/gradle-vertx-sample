@@ -12,7 +12,7 @@ card Framework/Middleware as fw {
   }
 
   fw.db -[hidden]- fw.appBase
-  fw.vertx -left-|> fw.appBase
+  fw.vertx <|-left- fw.appBase
 }
 
 card "ext" {
