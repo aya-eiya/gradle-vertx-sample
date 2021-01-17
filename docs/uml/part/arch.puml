@@ -1,4 +1,5 @@
 @startuml
+skinparam backgroundColor white
 skinparam linetype polyline
 
 card Framework/Middleware as fw {
